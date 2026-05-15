@@ -25,13 +25,17 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Effective From</mat-label>
-        <input matInput type="date" formControlName="effectiveFrom" />
+        <input matInput [matDatepicker]="pickerFrom" formControlName="effectiveFrom" placeholder="Select date" />
+        <mat-datepicker-toggle matIconSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFrom></mat-datepicker>
       </mat-form-field>
 
       @if (data.mode === 'edit') {
         <mat-form-field appearance="outline">
           <mat-label>Effective To (optional)</mat-label>
-          <input matInput type="date" formControlName="effectiveTo" />
+          <input matInput [matDatepicker]="pickerTo" formControlName="effectiveTo" placeholder="Select date" />
+          <mat-datepicker-toggle matIconSuffix [for]="pickerTo"></mat-datepicker-toggle>
+          <mat-datepicker #pickerTo></mat-datepicker>
         </mat-form-field>
       }
     </div>

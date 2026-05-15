@@ -6,6 +6,30 @@
   --text-primary: #2d3748;
   --text-secondary: #718096;
   --border-color: #e2e8f0;
+
+  // Ensure Material icons are properly hidden
+  ::ng-deep {
+    .mat-mdc-icon {
+      font-size: 24px !important;
+      width: 24px !important;
+      height: 24px !important;
+      overflow: hidden !important;
+      text-indent: -9999px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-rendering: optimizeLegibility !important;
+      -webkit-font-smoothing: antialiased !important;
+      -moz-osx-font-smoothing: grayscale !important;
+
+      // Use SVG rendering instead of text
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    }
+  }
 }
 
 .app-header {
@@ -100,6 +124,9 @@
         font-size: 18px;
         width: 18px;
         height: 18px;
+        display: inline-block;
+        overflow: hidden;
+        flex-shrink: 0;
       }
 
       &:hover {
