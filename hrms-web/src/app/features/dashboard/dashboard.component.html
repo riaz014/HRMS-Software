@@ -11,11 +11,12 @@
     @for (stat of stats; track stat.label) {
       <div class="stat-card" [style.--stat-color]="stat.color">
         <div class="stat-icon">
-          <mat-icon>{{ stat.icon }}</mat-icon>
+          <mat-icon [style.color]="stat.color">{{ stat.icon }}</mat-icon>
         </div>
         <div class="stat-content">
           <p class="stat-label">{{ stat.label }}</p>
           <p class="stat-value">{{ stat.value }}</p>
+          <p class="stat-subtext" *ngIf="stat.subtext">{{ stat.subtext }}</p>
         </div>
       </div>
     }
@@ -44,6 +45,24 @@
               <mat-icon>arrow_forward</mat-icon>
               Open Module
             </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Recent Activity Section -->
+  <div class="activity-section">
+    <h2 class="section-title">Recent Activity</h2>
+    <div class="activity-list">
+      @for (activity of recentActivity; track activity.action) {
+        <div class="activity-item">
+          <div class="activity-icon">
+            <mat-icon>{{ activity.icon }}</mat-icon>
+          </div>
+          <div class="activity-content">
+            <p class="activity-action">{{ activity.action }}</p>
+            <p class="activity-date">{{ activity.date }}</p>
           </div>
         </div>
       }

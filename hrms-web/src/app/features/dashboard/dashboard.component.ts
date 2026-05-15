@@ -14,6 +14,14 @@ interface ModuleCard {
   stats: string;
 }
 
+interface StatCard {
+  label: string;
+  value: string;
+  icon: string;
+  color: string;
+  subtext?: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -29,7 +37,7 @@ export class DashboardComponent {
       route: '/employees',
       icon: 'people',
       color: 'blue',
-      stats: '50+ Employees'
+      stats: '150+ Employees'
     },
     {
       title: 'Salary Management',
@@ -37,7 +45,7 @@ export class DashboardComponent {
       route: '/salary',
       icon: 'attach_money',
       color: 'green',
-      stats: '50+ Salaries'
+      stats: '150+ Salaries'
     },
     {
       title: 'Payroll Management',
@@ -49,10 +57,36 @@ export class DashboardComponent {
     }
   ];
 
-  readonly stats = [
-    { label: 'Total Employees', value: '50', icon: 'people', color: '#667eea' },
-    { label: 'Active Payroll', value: '12', icon: 'check_circle', color: '#48bb78' },
-    { label: 'Pending Reviews', value: '3', icon: 'pending_actions', color: '#f6ad55' }
+  readonly stats: StatCard[] = [
+    { 
+      label: 'Total Employees', 
+      value: '150', 
+      icon: 'people', 
+      color: '#667eea',
+      subtext: 'Active in system'
+    },
+    { 
+      label: 'Active Payroll', 
+      value: '150', 
+      icon: 'check_circle', 
+      color: '#48bb78',
+      subtext: 'Processed this month'
+    },
+    { 
+      label: 'Pending Reviews', 
+      value: '8', 
+      icon: 'pending_actions', 
+      color: '#f6ad55',
+      subtext: 'Awaiting approval'
+    }
+  ];
+
+  readonly recentActivity = [
+    { action: 'Added new employee', date: 'Today', icon: 'person_add' },
+    { action: 'Payroll processed', date: '2 days ago', icon: 'done_all' },
+    { action: 'Salary updated', date: '5 days ago', icon: 'edit' },
+    { action: 'Leave request approved', date: '1 week ago', icon: 'check' }
   ];
 }
+
 
