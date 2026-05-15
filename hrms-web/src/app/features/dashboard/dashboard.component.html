@@ -1,16 +1,52 @@
-<section class="dashboard-shell">
-  <header>
-    <h1>HRMS Control Center</h1>
-    <p>Use the modules below to manage employees, salaries, and monthly payroll operations.</p>
-  </header>
+<section class="dashboard-container">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>HRMS Control Center</h1>
+      <p>Manage employees, salaries, and payroll operations from a single dashboard</p>
+    </div>
+  </div>
 
-  <div class="cards-grid">
-    @for (module of modules; track module.title) {
-      <mat-card>
-        <h2>{{ module.title }}</h2>
-        <p>{{ module.description }}</p>
-        <button mat-flat-button color="primary" [routerLink]="module.route">Open Module</button>
-      </mat-card>
+  <!-- Stats Section -->
+  <div class="stats-grid">
+    @for (stat of stats; track stat.label) {
+      <div class="stat-card" [style.--stat-color]="stat.color">
+        <div class="stat-icon">
+          <mat-icon>{{ stat.icon }}</mat-icon>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">{{ stat.label }}</p>
+          <p class="stat-value">{{ stat.value }}</p>
+        </div>
+      </div>
     }
+  </div>
+
+  <!-- Modules Grid -->
+  <div class="modules-section">
+    <h2 class="section-title">Modules</h2>
+    <div class="modules-grid">
+      @for (module of modules; track module.title) {
+        <div class="module-card" [attr.data-color]="module.color">
+          <div class="card-header">
+            <div class="icon-wrapper">
+              <mat-icon>{{ module.icon }}</mat-icon>
+            </div>
+            <span class="stats-badge">{{ module.stats }}</span>
+          </div>
+          
+          <div class="card-content">
+            <h3>{{ module.title }}</h3>
+            <p>{{ module.description }}</p>
+          </div>
+          
+          <div class="card-footer">
+            <button mat-raised-button color="primary" [routerLink]="module.route" class="open-btn">
+              <mat-icon>arrow_forward</mat-icon>
+              Open Module
+            </button>
+          </div>
+        </div>
+      }
+    </div>
   </div>
 </section>

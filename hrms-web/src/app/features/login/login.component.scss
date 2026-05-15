@@ -1,0 +1,319 @@
+.login-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 16px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background: white;
+  min-height: 600px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+}
+
+.login-branding {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 60px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    padding: 40px 30px;
+  }
+
+  .brand-content {
+    text-align: center;
+
+    .brand-logo {
+      font-size: 80px;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+
+      mat-icon {
+        font-size: 80px;
+        width: 80px;
+        height: 80px;
+      }
+    }
+
+    h1 {
+      font-size: 42px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: -0.5px;
+    }
+
+    > p {
+      font-size: 16px;
+      opacity: 0.9;
+      margin: 0 0 40px;
+      font-weight: 300;
+    }
+
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: left;
+
+      .feature {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+        font-weight: 500;
+        opacity: 0.95;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+}
+
+.login-form-section {
+  padding: 60px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    padding: 40px 30px;
+  }
+
+  .login-card {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+
+    mat-card-header {
+      padding: 0 0 30px;
+      margin: 0;
+
+      h2 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1a202c;
+        margin: 0 0 8px;
+        letter-spacing: -0.5px;
+      }
+
+      p {
+        font-size: 14px;
+        color: #718096;
+        margin: 0;
+        font-weight: 500;
+      }
+    }
+
+    mat-card-content {
+      padding: 0;
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .login-button {
+    height: 48px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+    }
+
+    .spinner-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    mat-spinner {
+      display: inline-block;
+    }
+  }
+
+  .demo-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #e2e8f0;
+
+    h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #4a5568;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 16px;
+    }
+
+    .credentials-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+      }
+
+      .credential-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #cbd5e0;
+          background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        &.admin {
+          border-left: 4px solid #667eea;
+        }
+
+        &.manager {
+          border-left: 4px solid #764ba2;
+        }
+
+        mat-icon {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+          color: #667eea;
+        }
+
+        strong {
+          font-size: 13px;
+          color: #2d3748;
+          font-weight: 700;
+        }
+
+        code {
+          font-size: 12px;
+          font-family: 'Monaco', 'Menlo', monospace;
+          background: rgba(102, 126, 234, 0.1);
+          color: #667eea;
+          padding: 4px 8px;
+          border-radius: 4px;
+          width: 100%;
+          text-align: center;
+          word-break: break-word;
+        }
+      }
+    }
+  }
+
+  .footer-text {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 12px;
+    color: #a0aec0;
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+// Material form field overrides
+::ng-deep {
+  .login-form-section {
+    .mdc-text-field {
+      &:not(.mdc-text-field--disabled) {
+        background-color: #f7f9fc !important;
+      }
+    }
+
+    .mat-mdc-form-field {
+      .mdc-text-field--filled .mdc-text-field__input {
+        color: #2d3748 !important;
+
+        &::placeholder {
+          color: #cbd5e0 !important;
+        }
+      }
+
+      .mat-mdc-floating-label {
+        color: #718096 !important;
+      }
+
+      &.mat-focused {
+        .mat-mdc-floating-label {
+          color: #667eea !important;
+        }
+      }
+
+      .mat-mdc-notched-outline__leading,
+      .mat-mdc-notched-outline__notch,
+      .mat-mdc-notched-outline__trailing {
+        border-color: #cbd5e0 !important;
+      }
+
+      &.mat-focused .mat-mdc-notched-outline__leading,
+      &.mat-focused .mat-mdc-notched-outline__notch,
+      &.mat-focused .mat-mdc-notched-outline__trailing {
+        border-color: #667eea !important;
+        border-width: 2px !important;
+      }
+    }
+
+    mat-icon[matPrefix] {
+      color: #a0aec0;
+      margin-right: 12px;
+    }
+  }
+}
+
