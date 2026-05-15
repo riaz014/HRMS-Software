@@ -5,6 +5,10 @@ export interface Employee {
   lastName: string;
   fullName: string;
   email: string;
+  contactNumber: string;
+  position: string;
+  accountNumber: string;
+  employmentStatus: string;
   dateOfJoining: string;
   isActive: boolean;
   departmentId: number;
@@ -16,7 +20,10 @@ export interface UpsertEmployeePayload {
   firstName: string;
   lastName: string;
   email: string;
+  contactNumber: string;
+  position: string;
+  accountNumber: string;
+  employmentStatus: string;
   dateOfJoining: string;
   departmentId: number;
-  isActive: boolean;
 }

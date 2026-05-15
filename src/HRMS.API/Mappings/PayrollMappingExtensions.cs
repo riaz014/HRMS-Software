@@ -22,4 +22,19 @@ public static class PayrollMappingExtensions
             Status = "Processed"
         };
     }
+
+    public static PayrollReportItemDto ToPayrollReportItemDto(this Payroll payroll)
+    {
+        return new PayrollReportItemDto
+        {
+            PayrollId = payroll.Id,
+            EmployeeId = payroll.EmployeeId,
+            EmployeeName = $"{payroll.Employee.FirstName} {payroll.Employee.LastName}".Trim(),
+            EmployeeNumber = payroll.Employee.EmployeeNumber,
+            GrossPay = payroll.GrossPay,
+            Deductions = payroll.Deductions,
+            NetPay = payroll.NetPay,
+            ProcessedAtUtc = payroll.ProcessedAtUtc
+        };
+    }
 }

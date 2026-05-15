@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>{{ data.mode === 'create' ? 'Add Salary Revision' : 'Edit Salary' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="salary-form">
+  <mat-dialog-content>
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Employee ID</mat-label>
+        <input matInput type="number" formControlName="employeeId" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Base Salary</mat-label>
+        <input matInput type="number" formControlName="basicAmount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Allowance / Bonus</mat-label>
+        <input matInput type="number" formControlName="allowanceAmount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Fixed Deductions</mat-label>
+        <input matInput type="number" formControlName="deductionAmount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Effective From</mat-label>
+        <input matInput type="date" formControlName="effectiveFrom" />
+      </mat-form-field>
+
+      @if (data.mode === 'edit') {
+        <mat-form-field appearance="outline">
+          <mat-label>Effective To (optional)</mat-label>
+          <input matInput type="date" formControlName="effectiveTo" />
+        </mat-form-field>
+      }
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="submit">{{ data.mode === 'create' ? 'Create' : 'Update' }}</button>
+  </mat-dialog-actions>
+</form>

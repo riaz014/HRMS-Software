@@ -30,6 +30,21 @@
             <td mat-cell *matCellDef="let row">{{ row.fullName }}</td>
           </ng-container>
 
+          <ng-container matColumnDef="position">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Position</th>
+            <td mat-cell *matCellDef="let row">{{ row.position }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="contactNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Contact</th>
+            <td mat-cell *matCellDef="let row">{{ row.contactNumber }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="accountNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Account #</th>
+            <td mat-cell *matCellDef="let row">{{ row.accountNumber }}</td>
+          </ng-container>
+
           <ng-container matColumnDef="email">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
             <td mat-cell *matCellDef="let row">{{ row.email }}</td>
@@ -45,11 +60,11 @@
             <td mat-cell *matCellDef="let row">{{ row.dateOfJoining | date: 'mediumDate' }}</td>
           </ng-container>
 
-          <ng-container matColumnDef="isActive">
+          <ng-container matColumnDef="employmentStatus">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
             <td mat-cell *matCellDef="let row">
-              <span [class.active]="row.isActive" [class.inactive]="!row.isActive">
-                {{ row.isActive ? 'Active' : 'Inactive' }}
+              <span [class.active]="row.employmentStatus === 'Active'" [class.inactive]="row.employmentStatus !== 'Active'">
+                {{ row.employmentStatus }}
               </span>
             </td>
           </ng-container>

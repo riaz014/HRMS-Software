@@ -36,9 +36,14 @@ public sealed class EmployeeRepository : GenericRepository<Employee>, IEmployeeR
         {
             var normalizedName = name.Trim();
             query = query.Where(x =>
+                x.EmployeeNumber.Contains(normalizedName) ||
                 x.FirstName.Contains(normalizedName) ||
                 x.LastName.Contains(normalizedName) ||
-                (x.FirstName + " " + x.LastName).Contains(normalizedName));
+                (x.FirstName + " " + x.LastName).Contains(normalizedName) ||
+                x.Email.Contains(normalizedName) ||
+                x.ContactNumber.Contains(normalizedName) ||
+                x.Position.Contains(normalizedName) ||
+                x.AccountNumber.Contains(normalizedName));
         }
 
         if (departmentId.HasValue)
@@ -81,6 +86,18 @@ public sealed class EmployeeRepository : GenericRepository<Employee>, IEmployeeR
     public async Task<bool> ExistsByEmployeeNumberAsync(string employeeNumber, int? excludeEmployeeId = null, CancellationToken cancellationToken = default)
     {
         var query = DbSet.AsNoTracking().Where(x => x.EmployeeNumber == employeeNumber);
+
+        if (excludeEmployeeId.HasValue)
+        {
+            query = query.Where(x => x.Id != excludeEmployeeId.Value);
+        }
+
+        return await query.AnyAsync(cancellationToken);
+    }
+
+    public async Task<bool> ExistsByAccountNumberAsync(string accountNumber, int? excludeEmployeeId = null, CancellationToken cancellationToken = default)
+    {
+        var query = DbSet.AsNoTracking().Where(x => x.AccountNumber == accountNumber);
 
         if (excludeEmployeeId.HasValue)
         {

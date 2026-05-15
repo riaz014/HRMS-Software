@@ -1,0 +1,67 @@
+PackageIdentifier: Microsoft.SQLServer.2022.Express
+PackageVersion: 16.0.1000.6
+Tags:
+- database
+- express
+- mssql
+- sql
+- sqlserver
+PackageLocale: en-US
+Author: Microsoft Corporation
+Copyright: Copyright (c) Microsoft Corporation
+ShortDescription: SQL Server 2022 Express is a free edition of SQL Server, ideal for
+  development and production for desktop, web, and small server applications.
+License: Proprietary
+PackageName: Microsoft SQL Server 2022 Express
+PackageUrl: https://www.microsoft.com/en-us/
+PrivacyUrl: https://privacy.microsoft.com/en-us/privacystatement
+Publisher: Microsoft Corporation
+PublisherUrl: https://www.microsoft.com/en-us/sql-server/
+Localization:
+- Tags:
+  - database
+  - express
+  - mssql
+  - sql
+  - sqlserver
+  PackageLocale: zh-CN
+  Author: Microsoft Corporation
+  Copyright: Copyright (c) Microsoft Corporation
+  ShortDescription: "SQL Server 2022 Express \u662F SQL Server \u7684\u514D\u8D39\u7248\u672C,\u975E\u5E38\u9002\u5408\u684C\u9762\u3001Web
+    \u548C\u5C0F\u578B\u670D\u52A1\u5668\u5E94\u7528\u8FDB\u7A0B\u7684\u5F00\u53D1\u548C\u751F\u4EA7\u3002"
+  License: Proprietary
+  PackageName: Microsoft SQL Server 2022 Express
+  PackageUrl: https://www.microsoft.com/zh-cn/
+  PrivacyUrl: https://privacy.microsoft.com/zh-cn/privacystatement
+  Publisher: Microsoft Corporation
+  PublisherUrl: https://www.microsoft.com/zh-cn/sql-server/
+Installers:
+- Architecture: x64
+  InstallerType: exe
+  InstallerSha256: 36e0ec2ac3dd60f496c99ce44722c629209ea7302a2ce9cbfd1e42a73510d7b6
+  InstallerUrl: https://download.microsoft.com/download/5/1/4/5145fe04-4d30-4b85-b0d1-39533663a2f1/SQL2022-SSEI-Expr.exe
+  InstallerLocale: en-US
+  ReleaseDate: 2022-11-15
+  InstallerAbortsTerminal: false
+  InstallLocationRequired: false
+  RequireExplicitUpgrade: false
+  DisplayInstallWarnings: false
+  DownloadCommandProhibited: false
+  ArchiveBinariesDependOnPath: false
+  UpgradeBehavior: install
+  FileExtensions:
+  - sql
+  ExpectedReturnCodes:
+  - InstallerReturnCode: 3010
+    ReturnResponse: rebootRequiredToFinish
+  InstallerSwitches:
+    Silent: /IACCEPTSQLSERVERLICENSETERMS /ENU /ACTION=Install /quiet /InstallPath="c:\Program
+      Files\Microsoft SQL Server"
+    SilentWithProgress: /IACCEPTSQLSERVERLICENSETERMS /ENU /ACTION=Install /quiet
+      /InstallPath="c:\Program Files\Microsoft SQL Server"
+  InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+ManifestVersion: 1.10.0
+ManifestType: merged

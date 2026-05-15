@@ -22,10 +22,25 @@ public sealed class UpdateEmployeeRequestDto
     public string Email { get; set; } = string.Empty;
 
     [Required]
+    [StringLength(30)]
+    [Phone]
+    public string ContactNumber { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(100)]
+    public string Position { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(50)]
+    public string AccountNumber { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(30)]
+    public string EmploymentStatus { get; set; } = "Active";
+
+    [Required]
     public DateTime DateOfJoining { get; set; }
 
     [Range(1, int.MaxValue)]
     public int DepartmentId { get; set; }
-
-    public bool IsActive { get; set; } = true;
 }

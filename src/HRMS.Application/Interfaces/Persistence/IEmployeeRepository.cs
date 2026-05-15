@@ -15,4 +15,5 @@ public interface IEmployeeRepository : IGenericRepository<Employee>
     Task<Employee?> GetByIdWithDepartmentAsync(int id, CancellationToken cancellationToken = default);
     Task<bool> ExistsByEmailAsync(string email, int? excludeEmployeeId = null, CancellationToken cancellationToken = default);
     Task<bool> ExistsByEmployeeNumberAsync(string employeeNumber, int? excludeEmployeeId = null, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByAccountNumberAsync(string accountNumber, int? excludeEmployeeId = null, CancellationToken cancellationToken = default);
 }

@@ -45,6 +45,66 @@ flowchart LR
       B6 --> C
 ```
 
+## Database Schema (Mermaid ERD)
+
+```mermaid
+erDiagram
+   DEPARTMENTS ||--o{ EMPLOYEES : has
+   EMPLOYEES ||--o{ SALARIES : has
+   EMPLOYEES ||--o{ PAYROLL_TRANSACTIONS : receives
+   SALARIES ||--o{ PAYROLL_TRANSACTIONS : used_for
+
+   DEPARTMENTS {
+      int Id PK
+      string Name
+      datetime CreatedAtUtc
+      datetime UpdatedAtUtc
+   }
+
+   EMPLOYEES {
+      int Id PK
+      string EmployeeNumber UK
+      string FirstName
+      string LastName
+      string Email UK
+      string ContactNumber
+      string Position
+      string AccountNumber UK
+      string EmploymentStatus
+      date DateOfJoining
+      bool IsActive
+      int DepartmentId FK
+      datetime CreatedAtUtc
+      datetime UpdatedAtUtc
+   }
+
+   SALARIES {
+      int Id PK
+      int EmployeeId FK
+      decimal BasicAmount
+      decimal AllowanceAmount
+      decimal DeductionAmount
+      date EffectiveFrom
+      date EffectiveTo
+      datetime CreatedAtUtc
+      datetime UpdatedAtUtc
+   }
+
+   PAYROLL_TRANSACTIONS {
+      int Id PK
+      int EmployeeId FK
+      int SalaryId FK
+      int PayrollYear
+      int PayrollMonth
+      decimal GrossPay
+      decimal Deductions
+      decimal NetPay
+      datetime ProcessedAtUtc
+      datetime CreatedAtUtc
+      datetime UpdatedAtUtc
+   }
+```
+
 ## Project Structure
 
 - src/HRMS.Domain: Entities and core domain models.
@@ -128,12 +188,17 @@ Login endpoint:
 
 - POST /api/auth/login
 
-Payroll endpoints are protected and require HR_Manager role.
+Protected modules:
+
+- Employee endpoints: Admin, HR_Manager
+- Salary endpoints: Admin, HR_Manager
+- Payroll endpoints: HR_Manager
 
 ## Key Implemented Modules
 
-- Employee Management (Angular Material table, sorting/filtering, add/edit dialog).
-- Payroll Dashboard (generate monthly payroll, recent payments list, export payslip PDF).
+- Employee Management (add/edit/delete, search/filter, department mapping, contact details, position, account number, employment status).
+- Salary Management (salary revisions with effective dates, bonuses/allowances, fixed deductions, validation checks).
+- Payroll Dashboard (generate monthly payroll, tax and deduction calculations, recent payments list, period summary report, export payslip PDF).
 - Global API exception handling for consistent error responses.
 - Repository Pattern + Unit of Work in backend.
 

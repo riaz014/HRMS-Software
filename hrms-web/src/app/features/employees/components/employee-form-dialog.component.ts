@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 import { UpsertEmployeePayload } from '../models/employee.model';
 
 export interface EmployeeFormDialogData {
@@ -23,13 +23,14 @@ export interface EmployeeFormDialogData {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatCheckboxModule
+    MatSelectModule
   ],
   templateUrl: './employee-form-dialog.component.html',
   styleUrl: './employee-form-dialog.component.scss'
 })
 export class EmployeeFormDialogComponent {
   readonly form;
+  readonly employmentStatuses = ['Active', 'Inactive', 'On Leave', 'Terminated'];
 
   constructor(
     private readonly formBuilder: FormBuilder,
@@ -41,9 +42,12 @@ export class EmployeeFormDialogComponent {
       firstName: [this.data.employee?.firstName ?? '', [Validators.required, Validators.maxLength(100)]],
       lastName: [this.data.employee?.lastName ?? '', [Validators.required, Validators.maxLength(100)]],
       email: [this.data.employee?.email ?? '', [Validators.required, Validators.email, Validators.maxLength(200)]],
+      contactNumber: [this.data.employee?.contactNumber ?? '', [Validators.required, Validators.maxLength(30)]],
+      position: [this.data.employee?.position ?? '', [Validators.required, Validators.maxLength(100)]],
+      accountNumber: [this.data.employee?.accountNumber ?? '', [Validators.required, Validators.maxLength(50)]],
+      employmentStatus: [this.data.employee?.employmentStatus ?? 'Active', [Validators.required, Validators.maxLength(30)]],
       dateOfJoining: [this.data.employee?.dateOfJoining ?? '', [Validators.required]],
-      departmentId: [this.data.employee?.departmentId ?? 0, [Validators.required, Validators.min(1)]],
-      isActive: [this.data.employee?.isActive ?? true]
+      departmentId: [this.data.employee?.departmentId ?? 0, [Validators.required, Validators.min(1)]]
     });
   }
 
@@ -59,9 +63,12 @@ export class EmployeeFormDialogComponent {
       firstName: raw.firstName.trim(),
       lastName: raw.lastName.trim(),
       email: raw.email.trim(),
+      contactNumber: raw.contactNumber.trim(),
+      position: raw.position.trim(),
+      accountNumber: raw.accountNumber.trim(),
+      employmentStatus: raw.employmentStatus.trim(),
       dateOfJoining: raw.dateOfJoining,
-      departmentId: Number(raw.departmentId),
-      isActive: raw.isActive
+      departmentId: Number(raw.departmentId)
     });
   }
 }

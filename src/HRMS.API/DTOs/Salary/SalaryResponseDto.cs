@@ -1,14 +1,15 @@
-namespace HRMS.Domain.Entities;
+namespace HRMS.API.DTOs.Salary;
 
-public sealed class Salary : BaseEntity
+public sealed class SalaryResponseDto
 {
+    public int Id { get; set; }
     public int EmployeeId { get; set; }
+    public string EmployeeName { get; set; } = string.Empty;
+    public string EmployeeNumber { get; set; } = string.Empty;
     public decimal BasicAmount { get; set; }
     public decimal AllowanceAmount { get; set; }
     public decimal DeductionAmount { get; set; }
+    public decimal TotalCompensation { get; set; }
     public DateTime EffectiveFrom { get; set; }
     public DateTime? EffectiveTo { get; set; }
-
-    public Employee Employee { get; set; } = null!;
-    public ICollection<Payroll> Payrolls { get; set; } = new List<Payroll>();
 }

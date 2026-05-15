@@ -32,7 +32,7 @@ import { EmployeeFormDialogComponent } from './components/employee-form-dialog.c
   styleUrl: './employee-management.component.scss'
 })
 export class EmployeeManagementComponent implements OnInit, AfterViewInit {
-  readonly displayedColumns = ['employeeNumber', 'fullName', 'email', 'departmentName', 'dateOfJoining', 'isActive', 'actions'];
+  readonly displayedColumns = ['employeeNumber', 'fullName', 'position', 'contactNumber', 'accountNumber', 'departmentName', 'dateOfJoining', 'employmentStatus', 'actions'];
   readonly dataSource = new MatTableDataSource<Employee>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
@@ -49,9 +49,13 @@ export class EmployeeManagementComponent implements OnInit, AfterViewInit {
       return [
         employee.employeeNumber,
         employee.fullName,
+        employee.position,
+        employee.contactNumber,
+        employee.accountNumber,
         employee.email,
         employee.departmentName,
-        employee.departmentId.toString()
+        employee.departmentId.toString(),
+        employee.employmentStatus
       ]
         .join(' ')
         .toLowerCase()
@@ -103,9 +107,12 @@ export class EmployeeManagementComponent implements OnInit, AfterViewInit {
           firstName: employee.firstName,
           lastName: employee.lastName,
           email: employee.email,
+          contactNumber: employee.contactNumber,
+          position: employee.position,
+          accountNumber: employee.accountNumber,
+          employmentStatus: employee.employmentStatus,
           dateOfJoining: employee.dateOfJoining.split('T')[0],
-          departmentId: employee.departmentId,
-          isActive: employee.isActive
+          departmentId: employee.departmentId
         }
       },
       disableClose: true

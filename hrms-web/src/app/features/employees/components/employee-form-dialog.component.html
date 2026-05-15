@@ -37,12 +37,34 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
+        <mat-label>Contact Number</mat-label>
+        <input matInput formControlName="contactNumber" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Position</mat-label>
+        <input matInput formControlName="position" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-wide">
+        <mat-label>Account Number</mat-label>
+        <input matInput formControlName="accountNumber" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Employment Status</mat-label>
+        <mat-select formControlName="employmentStatus">
+          @for (status of employmentStatuses; track status) {
+            <mat-option [value]="status">{{ status }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
         <mat-label>Date of Joining</mat-label>
         <input matInput type="date" formControlName="dateOfJoining" />
         <mat-error *ngIf="form.controls.dateOfJoining.hasError('required')">Date of joining is required.</mat-error>
       </mat-form-field>
-
-      <mat-checkbox formControlName="isActive" class="field-wide">Active Employee</mat-checkbox>
     </div>
   </mat-dialog-content>
 

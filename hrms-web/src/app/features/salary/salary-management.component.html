@@ -1,0 +1,76 @@
+<section class="salary-page">
+  <mat-toolbar color="primary" class="salary-toolbar">
+    <span>Salary Management</span>
+    <span class="spacer"></span>
+    <button mat-flat-button class="add-btn" (click)="openCreateDialog()">
+      <mat-icon>add_card</mat-icon>
+      Add Salary Revision
+    </button>
+  </mat-toolbar>
+
+  <div class="salary-panel">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Search by employee</mat-label>
+      <input matInput #query (input)="applyFilter(query.value)" placeholder="Employee name, number, or ID" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    @if (loading) {
+      <p class="state-msg">Loading salary data...</p>
+    } @else {
+      <div class="table-wrap">
+        <table mat-table [dataSource]="dataSource">
+          <ng-container matColumnDef="employee">
+            <th mat-header-cell *matHeaderCellDef>Employee</th>
+            <td mat-cell *matCellDef="let row">{{ row.employeeName }} ({{ row.employeeNumber }})</td>
+          </ng-container>
+
+          <ng-container matColumnDef="base">
+            <th mat-header-cell *matHeaderCellDef>Base</th>
+            <td mat-cell *matCellDef="let row">{{ row.basicAmount | number: '1.2-2' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="allowance">
+            <th mat-header-cell *matHeaderCellDef>Allowance</th>
+            <td mat-cell *matCellDef="let row">{{ row.allowanceAmount | number: '1.2-2' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="deduction">
+            <th mat-header-cell *matHeaderCellDef>Deductions</th>
+            <td mat-cell *matCellDef="let row">{{ row.deductionAmount | number: '1.2-2' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>Total</th>
+            <td mat-cell *matCellDef="let row"><strong>{{ row.totalCompensation | number: '1.2-2' }}</strong></td>
+          </ng-container>
+
+          <ng-container matColumnDef="effectiveFrom">
+            <th mat-header-cell *matHeaderCellDef>Effective From</th>
+            <td mat-cell *matCellDef="let row">{{ row.effectiveFrom | date: 'mediumDate' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="effectiveTo">
+            <th mat-header-cell *matHeaderCellDef>Effective To</th>
+            <td mat-cell *matCellDef="let row">{{ row.effectiveTo ? (row.effectiveTo | date: 'mediumDate') : 'Current' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let row" class="actions-cell">
+              <button mat-icon-button color="primary" (click)="openEditDialog(row)"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button color="warn" (click)="deleteSalary(row)"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      @if (!dataSource.data.length) {
+        <p class="state-msg">No salary records yet. Add a salary revision to get started.</p>
+      }
+    }
+  </div>
+</section>

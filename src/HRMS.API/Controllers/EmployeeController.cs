@@ -1,6 +1,8 @@
 using HRMS.API.DTOs.Employees;
 using HRMS.API.Mappings;
+using HRMS.API.Auth;
 using HRMS.Application.Interfaces.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRMS.API.Controllers;
@@ -10,6 +12,7 @@ namespace HRMS.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = Roles.Admin + "," + Roles.HrManager)]
 public sealed class EmployeeController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -84,6 +87,11 @@ public sealed class EmployeeController : ControllerBase
             return BadRequest(new { message = "Email already exists." });
         }
 
+        if (await _unitOfWork.Employees.ExistsByAccountNumberAsync(request.AccountNumber, null, cancellationToken))
+        {
+            return BadRequest(new { message = "AccountNumber already exists." });
+        }
+
         var employee = request.ToEmployeeEntity();
 
         await _unitOfWork.Employees.AddAsync(employee, cancellationToken);
@@ -127,6 +135,11 @@ public sealed class EmployeeController : ControllerBase
         if (await _unitOfWork.Employees.ExistsByEmailAsync(request.Email, id, cancellationToken))
         {
             return BadRequest(new { message = "Email already exists." });
+        }
+
+        if (await _unitOfWork.Employees.ExistsByAccountNumberAsync(request.AccountNumber, id, cancellationToken))
+        {
+            return BadRequest(new { message = "AccountNumber already exists." });
         }
 
         existingEmployee.ApplyUpdate(request);

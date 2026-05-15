@@ -11,7 +11,7 @@ public sealed class UnitOfWork : IUnitOfWork
         ApplicationDbContext context,
         IEmployeeRepository employees,
         IGenericRepository<Department> departments,
-        IGenericRepository<Salary> salaries,
+        ISalaryRepository salaries,
         IPayrollRepository payrolls)
     {
         _context = context;
@@ -23,7 +23,7 @@ public sealed class UnitOfWork : IUnitOfWork
 
     public IEmployeeRepository Employees { get; }
     public IGenericRepository<Department> Departments { get; }
-    public IGenericRepository<Salary> Salaries { get; }
+    public ISalaryRepository Salaries { get; }
     public IPayrollRepository Payrolls { get; }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -15,6 +15,10 @@ public static class EmployeeMappingExtensions
             LastName = employee.LastName,
             FullName = $"{employee.FirstName} {employee.LastName}".Trim(),
             Email = employee.Email,
+            ContactNumber = employee.ContactNumber,
+            Position = employee.Position,
+            AccountNumber = employee.AccountNumber,
+            EmploymentStatus = employee.EmploymentStatus,
             DateOfJoining = employee.DateOfJoining,
             IsActive = employee.IsActive,
             DepartmentId = employee.DepartmentId,
@@ -30,9 +34,13 @@ public static class EmployeeMappingExtensions
             FirstName = request.FirstName.Trim(),
             LastName = request.LastName.Trim(),
             Email = request.Email.Trim(),
+            ContactNumber = request.ContactNumber.Trim(),
+            Position = request.Position.Trim(),
+            AccountNumber = request.AccountNumber.Trim(),
+            EmploymentStatus = request.EmploymentStatus.Trim(),
             DateOfJoining = request.DateOfJoining,
             DepartmentId = request.DepartmentId,
-            IsActive = request.IsActive,
+            IsActive = string.Equals(request.EmploymentStatus, "Active", StringComparison.OrdinalIgnoreCase),
             CreatedAtUtc = DateTime.UtcNow
         };
     }
@@ -43,9 +51,13 @@ public static class EmployeeMappingExtensions
         employee.FirstName = request.FirstName.Trim();
         employee.LastName = request.LastName.Trim();
         employee.Email = request.Email.Trim();
+        employee.ContactNumber = request.ContactNumber.Trim();
+        employee.Position = request.Position.Trim();
+        employee.AccountNumber = request.AccountNumber.Trim();
+        employee.EmploymentStatus = request.EmploymentStatus.Trim();
         employee.DateOfJoining = request.DateOfJoining;
         employee.DepartmentId = request.DepartmentId;
-        employee.IsActive = request.IsActive;
+        employee.IsActive = string.Equals(request.EmploymentStatus, "Active", StringComparison.OrdinalIgnoreCase);
         employee.UpdatedAtUtc = DateTime.UtcNow;
     }
 }

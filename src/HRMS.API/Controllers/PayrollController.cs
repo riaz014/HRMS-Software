@@ -48,6 +48,40 @@ public sealed class PayrollController : ControllerBase
     }
 
     /// <summary>
+    /// Gets a detailed payroll report for a year and month.
+    /// </summary>
+    [HttpGet("report")]
+    public async Task<ActionResult<PayrollReportDto>> GetReport(
+        [FromQuery] int year,
+        [FromQuery] int month,
+        CancellationToken cancellationToken = default)
+    {
+        if (year < 2000 || year > 3000)
+        {
+            return BadRequest(new { message = "year must be between 2000 and 3000." });
+        }
+
+        if (month < 1 || month > 12)
+        {
+            return BadRequest(new { message = "month must be between 1 and 12." });
+        }
+
+        var items = await _unitOfWork.Payrolls.GetByPeriodAsync(year, month, cancellationToken);
+        var mappedItems = items.Select(x => x.ToPayrollReportItemDto()).ToList();
+
+        return Ok(new PayrollReportDto
+        {
+            Year = year,
+            Month = month,
+            TotalTransactions = mappedItems.Count,
+            TotalGrossPay = mappedItems.Sum(x => x.GrossPay),
+            TotalDeductions = mappedItems.Sum(x => x.Deductions),
+            TotalNetPay = mappedItems.Sum(x => x.NetPay),
+            Items = mappedItems
+        });
+    }
+
+    /// <summary>
     /// Generates monthly payroll for all active employees.
     /// </summary>
     /// <param name="request">Payroll generation input.</param>

@@ -58,12 +58,12 @@ public sealed class PayrollGenerationService : IPayrollGenerationService
                 continue;
             }
 
-            // Payroll formula: Gross = Base + Bonus, Taxes = Gross * Tax%, Net = Gross - (Taxes + Deductions)
+            // Payroll formula: Gross = Base + Bonus, Total Deductions = Taxes + Salary Deductions + Additional Deductions
             var baseSalary = salary.BasicAmount;
             var bonuses = salary.AllowanceAmount + request.AdditionalBonus;
             var grossPay = Math.Round(baseSalary + bonuses, 2, MidpointRounding.AwayFromZero);
             var taxes = Math.Round(grossPay * (request.TaxPercentage / 100m), 2, MidpointRounding.AwayFromZero);
-            var totalDeductions = Math.Round(taxes + request.AdditionalDeductions, 2, MidpointRounding.AwayFromZero);
+            var totalDeductions = Math.Round(taxes + salary.DeductionAmount + request.AdditionalDeductions, 2, MidpointRounding.AwayFromZero);
             var netPay = Math.Round(grossPay - totalDeductions, 2, MidpointRounding.AwayFromZero);
 
             var payrollTransaction = new Payroll

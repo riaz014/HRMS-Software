@@ -28,10 +28,29 @@ public sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .HasMaxLength(200)
             .IsRequired();
 
+        builder.Property(x => x.ContactNumber)
+            .HasMaxLength(30)
+            .IsRequired();
+
+        builder.Property(x => x.Position)
+            .HasMaxLength(100)
+            .IsRequired();
+
+        builder.Property(x => x.AccountNumber)
+            .HasMaxLength(50)
+            .IsRequired();
+
+        builder.Property(x => x.EmploymentStatus)
+            .HasMaxLength(30)
+            .IsRequired();
+
         builder.HasIndex(x => x.EmployeeNumber)
             .IsUnique();
 
         builder.HasIndex(x => x.Email)
+            .IsUnique();
+
+        builder.HasIndex(x => x.AccountNumber)
             .IsUnique();
 
         builder.HasMany(x => x.Salaries)

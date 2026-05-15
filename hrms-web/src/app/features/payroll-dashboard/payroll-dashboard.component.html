@@ -33,8 +33,32 @@
         <button mat-flat-button color="primary" type="submit" [disabled]="generating">
           {{ generating ? 'Generating...' : 'Generate Monthly Payroll' }}
         </button>
+        <button mat-stroked-button type="button" (click)="loadMonthlyReport()" [disabled]="loadingReport">
+          {{ loadingReport ? 'Loading Report...' : 'Load Monthly Report' }}
+        </button>
       </div>
     </form>
+
+    @if (monthlyReport) {
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="label">Transactions</span>
+          <strong>{{ monthlyReport.totalTransactions }}</strong>
+        </div>
+        <div class="summary-item">
+          <span class="label">Gross Total</span>
+          <strong>{{ monthlyReport.totalGrossPay | number: '1.2-2' }}</strong>
+        </div>
+        <div class="summary-item">
+          <span class="label">Deductions Total</span>
+          <strong>{{ monthlyReport.totalDeductions | number: '1.2-2' }}</strong>
+        </div>
+        <div class="summary-item">
+          <span class="label">Net Total</span>
+          <strong>{{ monthlyReport.totalNetPay | number: '1.2-2' }}</strong>
+        </div>
+      </div>
+    }
   </mat-card>
 
   <mat-card class="recent-card">

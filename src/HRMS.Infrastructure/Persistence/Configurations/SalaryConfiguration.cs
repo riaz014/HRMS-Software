@@ -20,6 +20,10 @@ public sealed class SalaryConfiguration : IEntityTypeConfiguration<Salary>
             .HasPrecision(18, 2)
             .IsRequired();
 
+        builder.Property(x => x.DeductionAmount)
+            .HasPrecision(18, 2)
+            .IsRequired();
+
         builder.Property(x => x.EffectiveFrom)
             .IsRequired();
 

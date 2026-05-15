@@ -12,6 +12,7 @@ import { ToastService } from '../../core/services/toast.service';
 import {
   GenerateMonthlyPayrollPayload,
   GenerateMonthlyPayrollResponse,
+  PayrollReport,
   RecentPayrollItem
 } from '../../shared/models/payroll.models';
 
@@ -35,7 +36,9 @@ export class PayrollDashboardComponent implements OnInit {
   readonly form;
 
   recentPayments: RecentPayrollItem[] = [];
+  monthlyReport: PayrollReport | null = null;
   loadingRecent = false;
+  loadingReport = false;
   generating = false;
 
   constructor(
@@ -54,6 +57,7 @@ export class PayrollDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadRecentPayments();
+    this.loadMonthlyReport();
   }
 
   generateMonthlyPayroll(): void {
@@ -75,6 +79,7 @@ export class PayrollDashboardComponent implements OnInit {
             4000
           );
           this.loadRecentPayments();
+          this.loadMonthlyReport();
         },
         error: () => {
           this.toast.error('Failed to generate monthly payroll.', 3500);
@@ -124,6 +129,26 @@ export class PayrollDashboardComponent implements OnInit {
         error: () => {
           this.recentPayments = [];
           this.toast.error('Could not load recent payroll payments.', 3500);
+        }
+      });
+  }
+
+  loadMonthlyReport(): void {
+    const year = this.form.controls.year.value;
+    const month = this.form.controls.month.value;
+
+    this.loadingReport = true;
+
+    this.apiService
+      .get<PayrollReport>('payroll/report', { year, month })
+      .pipe(finalize(() => (this.loadingReport = false)))
+      .subscribe({
+        next: (report) => {
+          this.monthlyReport = report;
+        },
+        error: () => {
+          this.monthlyReport = null;
+          this.toast.error('Could not load payroll report for the selected period.', 3500);
         }
       });
   }

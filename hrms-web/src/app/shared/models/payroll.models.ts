@@ -28,3 +28,24 @@ export interface RecentPayrollItem {
   processedAtUtc: string;
   status: string;
 }
+
+export interface PayrollReportItem {
+  payrollId: number;
+  employeeId: number;
+  employeeName: string;
+  employeeNumber: string;
+  grossPay: number;
+  deductions: number;
+  netPay: number;
+  processedAtUtc: string;
+}
+
+export interface PayrollReport {
+  year: number;
+  month: number;
+  totalTransactions: number;
+  totalGrossPay: number;
+  totalDeductions: number;
+  totalNetPay: number;
+  items: PayrollReportItem[];
+}

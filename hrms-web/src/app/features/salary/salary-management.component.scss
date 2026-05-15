@@ -1,0 +1,54 @@
+.salary-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at 25% 15%, #edf9f8, #f8fcff 48%, #ffffff);
+  padding: 24px;
+}
+
+.salary-toolbar {
+  border-radius: 16px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.add-btn {
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 999px;
+}
+
+.salary-panel {
+  margin-top: 18px;
+  background: #fff;
+  border: 1px solid #d7ecf2;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.filter-field {
+  width: min(420px, 100%);
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 980px;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.state-msg {
+  color: #4b5563;
+}
+
+@media (max-width: 768px) {
+  .salary-page {
+    padding: 12px;
+  }
+}

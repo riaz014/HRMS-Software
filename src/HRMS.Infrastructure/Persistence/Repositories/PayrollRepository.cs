@@ -23,6 +23,17 @@ public sealed class PayrollRepository : GenericRepository<Payroll>, IPayrollRepo
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Payroll>> GetByPeriodAsync(int year, int month, CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .AsNoTracking()
+            .Include(x => x.Employee)
+            .Where(x => x.PayrollYear == year && x.PayrollMonth == month)
+            .OrderBy(x => x.Employee.LastName)
+            .ThenBy(x => x.Employee.FirstName)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Payroll>> GetRecentAsync(int take = 20, CancellationToken cancellationToken = default)
     {
         return await DbSet
