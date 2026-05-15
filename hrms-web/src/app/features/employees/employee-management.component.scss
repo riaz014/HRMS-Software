@@ -1,0 +1,86 @@
+.employees-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at 15% 20%, #eef6ff, #f5f8fc 45%, #ffffff);
+  padding: 24px;
+  font-family: 'Manrope', sans-serif;
+}
+
+.employees-toolbar {
+  border-radius: 16px;
+  padding-inline: 14px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.add-btn {
+  background: #fff;
+  color: #0f172a;
+  border-radius: 999px;
+}
+
+.panel {
+  margin-top: 18px;
+  background: #ffffff;
+  border: 1px solid #dbe5f0;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.06);
+}
+
+.filter-field {
+  width: min(420px, 100%);
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 940px;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.active,
+.inactive {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.state-msg {
+  padding: 12px 0 4px;
+  color: #475569;
+}
+
+@media (max-width: 768px) {
+  .employees-page {
+    padding: 14px;
+  }
+
+  .employees-toolbar {
+    border-radius: 12px;
+  }
+
+  .panel {
+    border-radius: 12px;
+    padding: 14px;
+  }
+}

@@ -1,0 +1,64 @@
+.dashboard-page {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  min-height: 100vh;
+  background: linear-gradient(145deg, #eef4ff 0%, #ffffff 60%);
+}
+
+.generate-card,
+.recent-card {
+  border-radius: 16px;
+  border: 1px solid #deebfb;
+}
+
+.muted {
+  color: #5b6b85;
+  margin-top: 0;
+}
+
+.controls-grid {
+  margin-top: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.actions-row {
+  grid-column: 1 / -1;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 900px;
+}
+
+.status-pill {
+  background: #dcfce7;
+  color: #14532d;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.recent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-page {
+    padding: 12px;
+  }
+
+  .controls-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,79 @@
+<section class="employees-page">
+  <mat-toolbar class="employees-toolbar" color="primary">
+    <span>Employee Management</span>
+    <span class="spacer"></span>
+    <button mat-flat-button class="add-btn" (click)="openCreateDialog()">
+      <mat-icon>person_add</mat-icon>
+      Add Employee
+    </button>
+  </mat-toolbar>
+
+  <div class="panel">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Search employee / department</mat-label>
+      <input matInput #filterInput (input)="applyFilter(filterInput.value)" placeholder="Type to filter table" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    @if (loading) {
+      <p class="state-msg">Loading employees...</p>
+    } @else {
+      <div class="table-wrap">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <ng-container matColumnDef="employeeNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Emp #</th>
+            <td mat-cell *matCellDef="let row">{{ row.employeeNumber }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="fullName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+            <td mat-cell *matCellDef="let row">{{ row.fullName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+            <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="departmentName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
+            <td mat-cell *matCellDef="let row">{{ row.departmentName }} ({{ row.departmentId }})</td>
+          </ng-container>
+
+          <ng-container matColumnDef="dateOfJoining">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Joined</th>
+            <td mat-cell *matCellDef="let row">{{ row.dateOfJoining | date: 'mediumDate' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="isActive">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <td mat-cell *matCellDef="let row">
+              <span [class.active]="row.isActive" [class.inactive]="!row.isActive">
+                {{ row.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let row" class="actions-cell">
+              <button mat-icon-button color="primary" (click)="openEditDialog(row)" aria-label="Edit employee">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteEmployee(row)" aria-label="Delete employee">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      @if (!dataSource.data.length) {
+        <p class="state-msg">No employees found yet. Start by adding one.</p>
+      }
+    }
+  </div>
+</section>

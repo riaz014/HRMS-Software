@@ -1,0 +1,27 @@
+# Build output
+**/bin/
+**/obj/
+
+# IDE
+.vs/
+.vscode/*.log
+
+# User secrets
+**/appsettings.*.local.json
+
+# Node
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Env files
+**/.env
+**/.env.*
