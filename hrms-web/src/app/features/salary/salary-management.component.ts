@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { provideDateAdapter } from '@angular/material/core';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { finalize } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -30,7 +30,7 @@ import { SalaryFormDialogComponent } from './components/salary-form-dialog.compo
     MatSnackBarModule
   ],
   providers: [
-    provideDateAdapter()
+    provideNativeDateAdapter()
   ],
   templateUrl: './salary-management.component.html',
   styleUrl: './salary-management.component.scss'
