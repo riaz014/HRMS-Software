@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, provideDateAdapter } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { UpsertEmployeePayload } from '../models/employee.model';
 
@@ -30,6 +30,9 @@ export interface EmployeeFormDialogData {
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule
+  ],
+  providers: [
+    provideDateAdapter()
   ],
   templateUrl: './employee-form-dialog.component.html',
   styleUrl: './employee-form-dialog.component.scss'

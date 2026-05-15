@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { provideDateAdapter } from '@angular/material/core';
 import { finalize } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -27,6 +28,9 @@ import { EmployeeFormDialogComponent } from './components/employee-form-dialog.c
     MatButtonModule,
     MatIconModule,
     MatToolbarModule
+  ],
+  providers: [
+    provideDateAdapter()
   ],
   templateUrl: './employee-management.component.html',
   styleUrl: './employee-management.component.scss'

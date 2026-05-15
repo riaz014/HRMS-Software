@@ -6,7 +6,7 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, provideDateAdapter, DateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CreateSalaryRequest, SalaryResponse, UpdateSalaryRequest } from '../../../shared/models/salary.models';
 
@@ -28,6 +28,9 @@ export interface SalaryFormDialogData {
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule
+  ],
+  providers: [
+    provideDateAdapter()
   ],
   templateUrl: './salary-form-dialog.component.html',
   styleUrl: './salary-form-dialog.component.scss'
