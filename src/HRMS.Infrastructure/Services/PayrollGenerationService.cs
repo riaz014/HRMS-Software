@@ -96,4 +96,79 @@ public sealed class PayrollGenerationService : IPayrollGenerationService
             SkippedNoSalaryCount = skippedNoSalaryCount
         };
     }
+
+    /// <summary>
+    /// Regenerates payroll for a specific employee (when salary is updated).
+    /// Recalculates payroll for current and recent months.
+    /// </summary>
+    public async Task RegenerateEmployeePayrollAsync(
+        int employeeId,
+        CancellationToken cancellationToken = default)
+    {
+        // Get current date to determine which months to regenerate
+        var now = DateTime.UtcNow;
+        var currentYear = now.Year;
+        var currentMonth = now.Month;
+        
+        // Regenerate payroll for current month and previous month (in case salary change affects recent periods)
+        var monthsToRegenerate = new[] 
+        { 
+            (currentYear, currentMonth),
+            (currentMonth == 1 ? currentYear - 1 : currentYear, currentMonth == 1 ? 12 : currentMonth - 1)
+        };
+
+        foreach (var (year, month) in monthsToRegenerate)
+        {
+            var payrollPeriod = new DateTime(year, month, 1);
+            
+            // Delete existing payroll for this employee in this period
+            var existingPayrolls = await _unitOfWork.Payrolls.FindAsync(
+                x => x.EmployeeId == employeeId
+                    && x.PayrollYear == year
+                    && x.PayrollMonth == month,
+                cancellationToken);
+
+            foreach (var payroll in existingPayrolls)
+            {
+                _unitOfWork.Payrolls.Remove(payroll);
+            }
+
+            // Find current salary for this period
+            var salary = (await _unitOfWork.Salaries.FindAsync(
+                    x => x.EmployeeId == employeeId
+                        && x.EffectiveFrom <= payrollPeriod
+                        && (!x.EffectiveTo.HasValue || x.EffectiveTo >= payrollPeriod),
+                    cancellationToken))
+                .OrderByDescending(x => x.EffectiveFrom)
+                .FirstOrDefault();
+
+            if (salary is not null)
+            {
+                // Recalculate payroll with current salary
+                var baseSalary = salary.BasicAmount;
+                var bonuses = salary.AllowanceAmount;
+                var grossPay = Math.Round(baseSalary + bonuses, 2, MidpointRounding.AwayFromZero);
+                var taxes = Math.Round(grossPay * 0.10m, 2, MidpointRounding.AwayFromZero); // Default 10% tax
+                var totalDeductions = Math.Round(taxes + salary.DeductionAmount, 2, MidpointRounding.AwayFromZero);
+                var netPay = Math.Round(grossPay - totalDeductions, 2, MidpointRounding.AwayFromZero);
+
+                var payrollTransaction = new Payroll
+                {
+                    EmployeeId = employeeId,
+                    SalaryId = salary.Id,
+                    PayrollYear = year,
+                    PayrollMonth = month,
+                    GrossPay = grossPay,
+                    Deductions = totalDeductions,
+                    NetPay = netPay,
+                    ProcessedAtUtc = DateTime.UtcNow,
+                    CreatedAtUtc = DateTime.UtcNow
+                };
+
+                await _unitOfWork.Payrolls.AddAsync(payrollTransaction, cancellationToken);
+            }
+        }
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
 }

@@ -14,7 +14,7 @@ namespace HRMS.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = Roles.HrManager)]
+[Authorize(Roles = Roles.Admin + "," + Roles.HrManager)]
 public sealed class PayrollController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;

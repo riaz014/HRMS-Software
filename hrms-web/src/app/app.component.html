@@ -30,6 +30,10 @@
           <mat-icon>assessment</mat-icon>
           <span>Payroll</span>
         </a>
+        <a *ngIf="currentRole === 'Admin'" routerLink="/activity-log" routerLinkActive="active-link" class="nav-link">
+          <mat-icon>history</mat-icon>
+          <span>Activity Log</span>
+        </a>
       </nav>
 
       <!-- User Section -->

@@ -2,6 +2,7 @@ using HRMS.API.DTOs.Salary;
 using HRMS.API.Mappings;
 using HRMS.API.Auth;
 using HRMS.Application.Interfaces.Persistence;
+using HRMS.Application.Interfaces.Services;
 using HRMS.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,12 @@ namespace HRMS.API.Controllers;
 public sealed class SalaryController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPayrollGenerationService _payrollGenerationService;
 
-    public SalaryController(IUnitOfWork unitOfWork)
+    public SalaryController(IUnitOfWork unitOfWork, IPayrollGenerationService payrollGenerationService)
     {
         _unitOfWork = unitOfWork;
+        _payrollGenerationService = payrollGenerationService;
     }
 
     /// <summary>
@@ -120,9 +123,13 @@ public sealed class SalaryController : ControllerBase
             return BadRequest(new { message = "DeductionAmount cannot exceed base plus allowance." });
         }
 
+        var employeeId = salary.EmployeeId;
         salary.ApplyUpdate(request);
         _unitOfWork.Salaries.Update(salary);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Regenerate payroll for this employee since salary changed
+        await _payrollGenerationService.RegenerateEmployeePayrollAsync(employeeId, cancellationToken);
 
         var updatedSalary = await _unitOfWork.Salaries.GetByIdWithEmployeeAsync(id, cancellationToken);
         return Ok((updatedSalary ?? salary).ToSalaryResponseDto());

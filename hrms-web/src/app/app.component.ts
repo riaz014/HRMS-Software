@@ -24,7 +24,7 @@ import { AuthService } from './core/services/auth.service';
 export class AppComponent implements OnInit {
   isAuthenticated = false;
   currentUsername: string | null = null;
-  private currentRole: string | null = null;
+  currentRole: string | null = null;
 
   constructor(
     private authService: AuthService,

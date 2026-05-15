@@ -7,4 +7,8 @@ public interface IPayrollGenerationService
     Task<GenerateMonthlyPayrollResult> GenerateMonthlyPayrollAsync(
         GenerateMonthlyPayrollRequest request,
         CancellationToken cancellationToken = default);
+
+    Task RegenerateEmployeePayrollAsync(
+        int employeeId,
+        CancellationToken cancellationToken = default);
 }
