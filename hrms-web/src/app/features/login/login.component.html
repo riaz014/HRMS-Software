@@ -4,7 +4,18 @@
     <div class="login-branding">
       <div class="brand-content">
         <div class="brand-logo">
-          <mat-icon>people</mat-icon>
+          <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+            <!-- Main circle background -->
+            <circle cx="40" cy="40" r="38" fill="rgba(255, 255, 255, 0.1)" stroke="white" stroke-width="2"/>
+            <!-- People icon styled -->
+            <circle cx="40" cy="28" r="10" fill="white"/>
+            <path d="M 30 45 Q 30 38 40 38 Q 50 38 50 45 L 50 55 Q 50 58 47 58 L 33 58 Q 30 58 30 55 Z" fill="white"/>
+            <!-- Additional people for HR theme -->
+            <circle cx="25" cy="45" r="7" fill="rgba(255, 255, 255, 0.8)"/>
+            <path d="M 18 58 Q 18 53 25 53 Q 32 53 32 58 L 32 62" fill="rgba(255, 255, 255, 0.8)"/>
+            <circle cx="55" cy="45" r="7" fill="rgba(255, 255, 255, 0.8)"/>
+            <path d="M 48 58 Q 48 53 55 53 Q 62 53 62 58 L 62 62" fill="rgba(255, 255, 255, 0.8)"/>
+          </svg>
         </div>
         <h1>HRMS</h1>
         <p>Human Resource Management System</p>
@@ -36,23 +47,22 @@
         <mat-card-content>
           <form [formGroup]="form" (ngSubmit)="login()">
             <!-- Username Field -->
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Username</mat-label>
+            <mat-form-field appearance="outline" class="full-width form-field">
+              <mat-label><mat-icon class="label-icon">person</mat-icon> Username</mat-label>
               <input 
                 matInput 
                 formControlName="username" 
                 placeholder="Enter your username"
                 [attr.aria-label]="'Username'"
               />
-              <mat-icon matPrefix>person</mat-icon>
               <mat-error *ngIf="username?.hasError('required')">
                 Username is required
               </mat-error>
             </mat-form-field>
 
             <!-- Password Field -->
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Password</mat-label>
+            <mat-form-field appearance="outline" class="full-width form-field">
+              <mat-label><mat-icon class="label-icon">lock</mat-icon> Password</mat-label>
               <input 
                 matInput 
                 type="password" 
@@ -60,7 +70,6 @@
                 placeholder="Enter your password"
                 [attr.aria-label]="'Password'"
               />
-              <mat-icon matPrefix>lock</mat-icon>
               <mat-error *ngIf="password?.hasError('required')">
                 Password is required
               </mat-error>
@@ -87,16 +96,20 @@
             <h3>Demo Account Credentials</h3>
             <div class="credentials-grid">
               <div class="credential-card admin">
-                <mat-icon>admin_panel_settings</mat-icon>
-                <strong>Administrator</strong>
-                <code>admin</code>
-                <code>Admin&#64;123</code>
+                <div class="card-icon"><mat-icon>admin_panel_settings</mat-icon></div>
+                <div class="card-text">
+                  <strong>Administrator</strong>
+                  <div class="cred-item"><span class="label">Username:</span> <code>admin</code></div>
+                  <div class="cred-item"><span class="label">Password:</span> <code>Admin&#64;123</code></div>
+                </div>
               </div>
               <div class="credential-card manager">
-                <mat-icon>manage_accounts</mat-icon>
-                <strong>HR Manager</strong>
-                <code>hrmanager</code>
-                <code>HrManager&#64;123</code>
+                <div class="card-icon"><mat-icon>manage_accounts</mat-icon></div>
+                <div class="card-text">
+                  <strong>HR Manager</strong>
+                  <div class="cred-item"><span class="label">Username:</span> <code>hrmanager</code></div>
+                  <div class="cred-item"><span class="label">Password:</span> <code>HrManager&#64;123</code></div>
+                </div>
               </div>
             </div>
           </div>
