@@ -110,4 +110,43 @@ public sealed class AuthController : ControllerBase
             Role = created.Role
         });
     }
+
+    [Authorize(Roles = Roles.Admin)]
+    [HttpGet("users")]
+    public ActionResult<IReadOnlyCollection<AuthUserDto>> GetUsers()
+    {
+        var users = _authUserStore
+            .GetUsers()
+            .Select(user => new AuthUserDto
+            {
+                Username = user.Username,
+                Role = user.Role
+            })
+            .ToList();
+
+        return Ok(users);
+    }
+
+    [Authorize(Roles = Roles.Admin)]
+    [HttpPost("users/reset-password")]
+    public IActionResult ResetUserPassword([FromBody] ResetUserPasswordRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.NewPassword))
+        {
+            return BadRequest(new { message = "Username and new password are required." });
+        }
+
+        if (request.NewPassword.Length < 6)
+        {
+            return BadRequest(new { message = "New password must be at least 6 characters long." });
+        }
+
+        var reset = _authUserStore.ResetPassword(request.Username, request.NewPassword);
+        if (!reset)
+        {
+            return NotFound(new { message = "User was not found." });
+        }
+
+        return Ok(new { message = "Password reset successfully." });
+    }
 }

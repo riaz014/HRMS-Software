@@ -216,6 +216,73 @@
   border-top: 1px solid #e0e0e0;
 }
 
+.users-management-section {
+  mat-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .users-header {
+    padding: 1.25rem 1.25rem 0.5rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      color: #2c3e50;
+    }
+
+    p {
+      margin: 0.35rem 0 0;
+      color: #666;
+      font-size: 0.92rem;
+    }
+  }
+
+  .users-loading {
+    height: 180px;
+  }
+
+  .users-table {
+    width: 100%;
+
+    th {
+      background-color: #3b82f6;
+      color: white;
+      font-weight: 600;
+      padding: 0.85rem 1rem;
+      text-align: left;
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: middle;
+    }
+
+    .reset-cell {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+
+      .reset-password-input {
+        width: 220px;
+        margin-bottom: -1.2em;
+
+        button[matSuffix] {
+          color: #6b7280;
+        }
+      }
+    }
+  }
+}
+
+::ng-deep .mat-mdc-dialog-content p {
+  margin: 0;
+  line-height: 1.5;
+}
+
 @media (max-width: 768px) {
   .activity-log-container {
     padding: 1rem;
@@ -249,6 +316,19 @@
     th, td {
       padding: 0.75rem 0.5rem;
       font-size: 0.85rem;
+    }
+  }
+
+  .users-management-section {
+    .users-table {
+      .reset-cell {
+        flex-direction: column;
+        align-items: stretch;
+
+        .reset-password-input {
+          width: 100%;
+        }
+      }
     }
   }
 }

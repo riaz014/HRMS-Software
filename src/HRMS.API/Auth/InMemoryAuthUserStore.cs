@@ -66,4 +66,34 @@ public sealed class InMemoryAuthUserStore : IAuthUserStore
             return created;
         }
     }
+
+    public IReadOnlyCollection<AuthUserAccount> GetUsers()
+    {
+        lock (_syncRoot)
+        {
+            return _users
+                .OrderBy(x => x.Username, StringComparer.OrdinalIgnoreCase)
+                .Select(x => new AuthUserAccount
+                {
+                    Username = x.Username,
+                    Role = x.Role
+                })
+                .ToList();
+        }
+    }
+
+    public bool ResetPassword(string username, string newPassword)
+    {
+        lock (_syncRoot)
+        {
+            var user = _users.FirstOrDefault(x => string.Equals(x.Username, username, StringComparison.OrdinalIgnoreCase));
+            if (user is null)
+            {
+                return false;
+            }
+
+            user.Password = newPassword;
+            return true;
+        }
+    }
 }

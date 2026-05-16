@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,8 +11,11 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../core/services/api.service';
+import { ApiService, AuthUserResponse } from '../../core/services/api.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 import { ActivityLog } from '../../shared/models/activity.models';
 
 @Component({
@@ -31,6 +34,7 @@ import { ActivityLog } from '../../shared/models/activity.models';
     MatTableModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatDialogModule,
     FormsModule
   ],
   templateUrl: './activity-log.component.html',
@@ -40,6 +44,16 @@ export class ActivityLogComponent implements OnInit {
   activities: ActivityLog[] = [];
   filteredActivities: ActivityLog[] = [];
   isLoading = false;
+  isAdmin = false;
+  users: AuthUserResponse[] = [];
+  isUsersLoading = false;
+  usersDisplayedColumns: string[] = ['username', 'role', 'resetPassword'];
+  resetPasswords: Record<string, string> = {};
+  showResetPasswords: Record<string, boolean> = {};
+  resettingUsers = new Set<string>();
+  pendingResetUsername: string | null = null;
+
+  @ViewChild('resetConfirmDialog') resetConfirmDialog!: TemplateRef<unknown>;
 
   displayedColumns: string[] = ['timestamp', 'module', 'action', 'performedBy', 'status'];
   
@@ -53,10 +67,20 @@ export class ActivityLogComponent implements OnInit {
   moduleOptions = ['Employee Management', 'Salary Management', 'Payroll Management', 'System'];
   statusOptions = ['success', 'error', 'pending'];
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private readonly apiService: ApiService,
+    private readonly authService: AuthService,
+    private readonly toastService: ToastService,
+    private readonly dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
+    this.isAdmin = this.authService.getCurrentUserSync()?.role === 'Admin';
     this.loadActivityLogs();
+
+    if (this.isAdmin) {
+      this.loadUsers();
+    }
   }
 
   loadActivityLogs(): void {
@@ -175,6 +199,85 @@ export class ActivityLogComponent implements OnInit {
     this.filterStatus = '';
     this.searchText = '';
     this.applyFilters();
+  }
+
+  loadUsers(): void {
+    this.isUsersLoading = true;
+
+    this.apiService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.isUsersLoading = false;
+      },
+      error: () => {
+        this.users = [];
+        this.isUsersLoading = false;
+        this.toastService.error('Could not load users.', 3000);
+      }
+    });
+  }
+
+  requestResetUserPassword(username: string): void {
+    const newPassword = (this.resetPasswords[username] ?? '').trim();
+    if (!newPassword) {
+      this.toastService.error('Please enter a new password first.', 2500);
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      this.toastService.error('Password must be at least 6 characters long.', 3000);
+      return;
+    }
+
+    this.pendingResetUsername = username;
+    this.dialog.open(this.resetConfirmDialog, {
+      width: '420px',
+      disableClose: true
+    });
+  }
+
+  cancelReset(): void {
+    this.pendingResetUsername = null;
+    this.dialog.closeAll();
+  }
+
+  confirmReset(): void {
+    if (!this.pendingResetUsername) {
+      this.dialog.closeAll();
+      return;
+    }
+
+    const username = this.pendingResetUsername;
+    this.pendingResetUsername = null;
+    this.dialog.closeAll();
+    this.resetUserPassword(username);
+  }
+
+  toggleResetPasswordVisibility(username: string): void {
+    this.showResetPasswords[username] = !this.showResetPasswords[username];
+  }
+
+  private resetUserPassword(username: string): void {
+    const newPassword = (this.resetPasswords[username] ?? '').trim();
+
+    this.resettingUsers.add(username);
+
+    this.apiService.resetUserPassword({ username, newPassword }).subscribe({
+      next: () => {
+        this.toastService.success(`Password reset for ${username}.`, 2500);
+        this.resetPasswords[username] = '';
+        this.resettingUsers.delete(username);
+      },
+      error: (error) => {
+        const message = error?.error?.message || `Could not reset password for ${username}.`;
+        this.toastService.error(message, 3500);
+        this.resettingUsers.delete(username);
+      }
+    });
+  }
+
+  isResetting(username: string): boolean {
+    return this.resettingUsers.has(username);
   }
 
   getStatusIcon(status: string): string {

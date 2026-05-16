@@ -8,6 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 
@@ -22,7 +24,9 @@ import { ToastService } from '../../core/services/toast.service';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
+    MatMenuModule,
+    ClipboardModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
@@ -33,6 +37,7 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
+    private clipboard: Clipboard,
     private authService: AuthService,
     private router: Router,
     private toastService: ToastService
@@ -73,5 +78,16 @@ export class LoginComponent {
 
   get password() {
     return this.form.get('password');
+  }
+
+  async copyCredential(value: string, label: string): Promise<void> {
+    const isCopied = this.clipboard.copy(value);
+
+    if (isCopied) {
+      this.toastService.success(`${label} copied`);
+      return;
+    }
+
+    this.toastService.error(`Could not copy ${label}. Please copy manually.`);
   }
 }

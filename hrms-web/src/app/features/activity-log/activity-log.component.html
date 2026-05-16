@@ -124,4 +124,92 @@
       </mat-paginator>
     </mat-card>
   </div>
+
+  <div *ngIf="isAdmin" class="users-management-section">
+    <mat-card>
+      <div class="users-header">
+        <h2>Users</h2>
+        <p>Admin only: view application users and reset their passwords.</p>
+      </div>
+
+      <div *ngIf="isUsersLoading" class="loading-container users-loading">
+        <mat-spinner diameter="32"></mat-spinner>
+        <p>Loading users...</p>
+      </div>
+
+      <div *ngIf="!isUsersLoading" class="table-container">
+        <table mat-table [dataSource]="users" class="users-table">
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>Username</th>
+            <td mat-cell *matCellDef="let user">{{ user.username }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let user">{{ user.role === 'Admin' ? 'Administrator' : 'HR Manager' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="resetPassword">
+            <th mat-header-cell *matHeaderCellDef>Reset Password</th>
+            <td mat-cell *matCellDef="let user" class="reset-cell">
+              <mat-form-field appearance="outline" class="reset-password-input">
+                <mat-label>New Password</mat-label>
+                <input
+                  matInput
+                  [type]="showResetPasswords[user.username] ? 'text' : 'password'"
+                  [(ngModel)]="resetPasswords[user.username]"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="At least 6 characters"
+                >
+                <button
+                  mat-icon-button
+                  matSuffix
+                  type="button"
+                  [attr.aria-label]="showResetPasswords[user.username] ? 'Hide password' : 'Show password'"
+                  (click)="toggleResetPasswordVisibility(user.username)"
+                >
+                  <mat-icon>{{ showResetPasswords[user.username] ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+              </mat-form-field>
+
+              <button
+                mat-raised-button
+                color="primary"
+                type="button"
+                [disabled]="isResetting(user.username)"
+                (click)="requestResetUserPassword(user.username)"
+              >
+                <mat-icon>lock_reset</mat-icon>
+                {{ isResetting(user.username) ? 'Resetting...' : 'Reset Password' }}
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="usersDisplayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: usersDisplayedColumns;"></tr>
+
+          <tr *ngIf="users.length === 0" class="no-data-row">
+            <td [attr.colspan]="usersDisplayedColumns.length" class="no-data-cell">
+              <mat-icon>group_off</mat-icon>
+              <p>No users available</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </mat-card>
+  </div>
+
+  <ng-template #resetConfirmDialog>
+    <h2 mat-dialog-title>Confirm Password Reset</h2>
+    <mat-dialog-content>
+      <p>
+        Are you sure you want to reset password for
+        <strong>{{ pendingResetUsername }}</strong>?
+      </p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="cancelReset()">Cancel</button>
+      <button mat-raised-button color="warn" type="button" (click)="confirmReset()">Confirm</button>
+    </mat-dialog-actions>
+  </ng-template>
 </section>
