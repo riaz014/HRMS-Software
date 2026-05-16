@@ -53,6 +53,11 @@
       border-color: #cbd5e0;
     }
 
+    &:focus-visible {
+      outline: 3px solid rgba(102, 126, 234, 0.45);
+      outline-offset: 3px;
+    }
+
     .stat-icon {
       width: 64px;
       height: 64px;

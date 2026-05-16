@@ -27,7 +27,7 @@
   gap: 1rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
 
   mat-form-field {
     flex: 1;
@@ -35,13 +35,20 @@
     max-width: 300px;
   }
 
-  .clear-btn {
-    height: 56px;
-    background-color: #f44336;
-    color: white;
+  .filter-action {
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    margin-top: 6px;
 
-    &:hover {
-      background-color: #da190b;
+    .clear-btn {
+      height: 56px;
+      background-color: #f44336;
+      color: white;
+
+      &:hover {
+        background-color: #da190b;
+      }
     }
   }
 }
@@ -222,14 +229,19 @@
 
   .filters-section {
     flex-direction: column;
+    align-items: stretch;
 
     mat-form-field {
       width: 100%;
       max-width: none;
     }
 
-    .clear-btn {
-      width: 100%;
+    .filter-action {
+      margin-top: 0;
+
+      .clear-btn {
+        width: 100%;
+      }
     }
   }
 

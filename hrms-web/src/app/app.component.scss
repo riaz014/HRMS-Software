@@ -32,6 +32,78 @@
   }
 }
 
+.app-skeleton {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #f8fafc 100%);
+}
+
+.skeleton-bar,
+.skeleton-line,
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+  background: #e2e8f0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 45%, transparent 100%);
+    animation: skeleton-shimmer 1.2s infinite;
+  }
+}
+
+.skeleton-header {
+  height: 70px;
+  background: #c7d2fe;
+}
+
+.skeleton-body {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+.skeleton-title {
+  width: min(420px, 80%);
+  height: 42px;
+  border-radius: 10px;
+}
+
+.skeleton-subtitle {
+  width: min(720px, 95%);
+  height: 18px;
+  margin-top: 12px;
+  border-radius: 8px;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 36px;
+}
+
+.skeleton-grid-modules {
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+}
+
+.skeleton-card {
+  height: 132px;
+  border-radius: 16px;
+}
+
+.skeleton-card-tall {
+  height: 228px;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .app-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -242,6 +314,18 @@
 }
 
 @media (max-width: 600px) {
+  .skeleton-header {
+    height: 60px;
+  }
+
+  .skeleton-body {
+    padding: 24px 16px;
+  }
+
+  .skeleton-grid {
+    gap: 16px;
+  }
+
   .app-header .header-container {
     padding: 0 16px;
     height: 60px;

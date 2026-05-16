@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,6 +27,7 @@ interface StatCard {
   value: string;
   icon: string;
   color: string;
+  route: string;
   subtext?: string;
 }
 
@@ -49,7 +50,8 @@ interface StatCard {
 })
 export class DashboardComponent implements OnInit {
   constructor(
-    private readonly apiService: ApiService
+    private readonly apiService: ApiService,
+    private readonly router: Router
   ) {}
   
   modules: ModuleCard[] = [
@@ -85,6 +87,7 @@ export class DashboardComponent implements OnInit {
       value: '0', 
       icon: 'people', 
       color: '#667eea',
+      route: '/employees',
       subtext: 'Active in system'
     },
     { 
@@ -92,6 +95,7 @@ export class DashboardComponent implements OnInit {
       value: '0', 
       icon: 'check_circle', 
       color: '#48bb78',
+      route: '/payroll-dashboard',
       subtext: 'Processed this month'
     },
     { 
@@ -99,9 +103,14 @@ export class DashboardComponent implements OnInit {
       value: '0', 
       icon: 'pending_actions', 
       color: '#f6ad55',
+      route: '/salary',
       subtext: 'Awaiting approval'
     }
   ];
+
+  openStat(stat: StatCard): void {
+    this.router.navigate([stat.route]);
+  }
 
   ngOnInit(): void {
     this.loadDashboardStats();

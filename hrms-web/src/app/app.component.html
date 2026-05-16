@@ -1,63 +1,92 @@
-<ng-container *ngIf="isAuthenticated">
-  <header class="app-header">
-    <div class="header-container">
-      <!-- Logo and Brand -->
-      <div class="brand-section">
-        <div class="brand-logo">
-          <mat-icon>people</mat-icon>
-        </div>
-        <div class="brand-text">
-          <h1>HRMS</h1>
-          <p>Human Resource Management System</p>
-        </div>
+<ng-container *ngIf="isAppInitializing; else appReady">
+  <div class="app-skeleton" aria-hidden="true">
+    <div class="skeleton-bar skeleton-header"></div>
+    <div class="skeleton-body">
+      <div class="skeleton-line skeleton-title"></div>
+      <div class="skeleton-line skeleton-subtitle"></div>
+      <div class="skeleton-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
       </div>
-
-      <!-- Navigation -->
-      <nav class="nav-menu">
-        <a routerLink="/dashboard" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>dashboard</mat-icon>
-          <span>Dashboard</span>
-        </a>
-        <a routerLink="/employees" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>people</mat-icon>
-          <span>Employees</span>
-        </a>
-        <a routerLink="/salary" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>attach_money</mat-icon>
-          <span>Salary</span>
-        </a>
-        <a routerLink="/payroll-dashboard" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>assessment</mat-icon>
-          <span>Payroll</span>
-        </a>
-        <a *ngIf="currentRole === 'Admin'" routerLink="/activity-log" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>history</mat-icon>
-          <span>Activity Log</span>
-        </a>
-      </nav>
-
-      <!-- User Section -->
-      <div class="user-section">
-        <div class="user-info">
-          <div class="user-avatar">{{ getUserInitials() }}</div>
-          <div class="user-details">
-            <span class="username">{{ currentUsername }}</span>
-            <span class="user-role">{{ getCurrentRole() }}</span>
-          </div>
-        </div>
-        <button 
-          mat-icon-button 
-          (click)="logout()" 
-          class="logout-btn"
-          matTooltip="Logout"
-        >
-          <mat-icon>logout</mat-icon>
-        </button>
+      <div class="skeleton-grid skeleton-grid-modules">
+        <div class="skeleton-card skeleton-card-tall"></div>
+        <div class="skeleton-card skeleton-card-tall"></div>
       </div>
     </div>
-  </header>
+  </div>
 </ng-container>
 
-<main class="app-content" [class.authenticated]="isAuthenticated">
-  <router-outlet></router-outlet>
-</main>
+<ng-template #appReady>
+  <ng-container *ngIf="isAuthenticated">
+    <header class="app-header">
+      <div class="header-container">
+        <!-- Logo and Brand -->
+        <div
+          class="brand-section"
+          role="button"
+          tabindex="0"
+          (click)="goToHomeAndRefresh()"
+          (keydown.enter)="goToHomeAndRefresh()"
+          (keydown.space)="goToHomeAndRefresh(); $event.preventDefault()"
+          matTooltip="Go to Home"
+        >
+          <div class="brand-logo">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="brand-text">
+            <h1>HRMS</h1>
+            <p>Human Resource Management System</p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav-menu">
+          <a routerLink="/dashboard" routerLinkActive="active-link" class="nav-link">
+            <mat-icon>dashboard</mat-icon>
+            <span>Dashboard</span>
+          </a>
+          <a routerLink="/employees" routerLinkActive="active-link" class="nav-link">
+            <mat-icon>people</mat-icon>
+            <span>Employees</span>
+          </a>
+          <a routerLink="/salary" routerLinkActive="active-link" class="nav-link">
+            <mat-icon>attach_money</mat-icon>
+            <span>Salary</span>
+          </a>
+          <a routerLink="/payroll-dashboard" routerLinkActive="active-link" class="nav-link">
+            <mat-icon>assessment</mat-icon>
+            <span>Payroll</span>
+          </a>
+          <a *ngIf="currentRole === 'Admin'" routerLink="/activity-log" routerLinkActive="active-link" class="nav-link">
+            <mat-icon>history</mat-icon>
+            <span>Activity Log</span>
+          </a>
+        </nav>
+
+        <!-- User Section -->
+        <div class="user-section">
+          <div class="user-info">
+            <div class="user-avatar">{{ getUserInitials() }}</div>
+            <div class="user-details">
+              <span class="username">{{ currentUsername }}</span>
+              <span class="user-role">{{ getCurrentRole() }}</span>
+            </div>
+          </div>
+          <button 
+            mat-icon-button 
+            (click)="logout()" 
+            class="logout-btn"
+            matTooltip="Logout"
+          >
+            <mat-icon>logout</mat-icon>
+          </button>
+        </div>
+      </div>
+    </header>
+  </ng-container>
+
+  <main class="app-content" [class.authenticated]="isAuthenticated">
+    <router-outlet></router-outlet>
+  </main>
+</ng-template>

@@ -9,7 +9,15 @@
   <!-- Stats Section -->
   <div class="stats-grid">
     @for (stat of stats; track stat.label) {
-      <div class="stat-card" [style.--stat-color]="stat.color">
+      <div
+        class="stat-card"
+        [style.--stat-color]="stat.color"
+        role="button"
+        tabindex="0"
+        (click)="openStat(stat)"
+        (keydown.enter)="openStat(stat)"
+        (keydown.space)="openStat(stat); $event.preventDefault()"
+      >
         <div class="stat-icon">
           <mat-icon [style.color]="stat.color">{{ stat.icon }}</mat-icon>
         </div>
