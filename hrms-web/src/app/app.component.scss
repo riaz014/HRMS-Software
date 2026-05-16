@@ -324,6 +324,18 @@
   }
 }
 
+.app-footer {
+  text-align: center;
+  padding: 1rem 1rem 1.4rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #f8fafc 100%);
+  color: #64748b;
+  font-size: 0.85rem;
+
+  p {
+    margin: 0.1rem 0;
+  }
+}
+
 @media (max-width: 1024px) {
   .app-header .header-container {
     gap: 20px;

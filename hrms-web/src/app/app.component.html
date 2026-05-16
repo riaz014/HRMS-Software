@@ -97,4 +97,9 @@
   <main class="app-content" [class.authenticated]="isAuthenticated">
     <router-outlet></router-outlet>
   </main>
+
+  <footer class="app-footer" *ngIf="isAuthenticated">
+    <p>&copy; 2026 HRMS. All rights reserved.</p>
+    <p>Application rights owner: Md Abdulla Walid Riaz.</p>
+  </footer>
 </ng-template>
