@@ -14,6 +14,7 @@ import { ApiService } from '../../core/services/api.service';
 import { ToastService } from '../../core/services/toast.service';
 import { Employee, UpsertEmployeePayload } from './models/employee.model';
 import { EmployeeFormDialogComponent } from './components/employee-form-dialog.component';
+import { EmployeeFormDialogData } from './components/employee-form-dialog.component';
 
 @Component({
   selector: 'app-employee-management',
@@ -79,11 +80,19 @@ export class EmployeeManagementComponent implements OnInit, AfterViewInit {
     this.dataSource.filter = value;
   }
 
-  openCreateDialog(): void {
-    const dialogRef = this.dialog.open(EmployeeFormDialogComponent, {
-      data: { mode: 'create' },
-      disableClose: true
+  private openEmployeeDialog(data: EmployeeFormDialogData) {
+    return this.dialog.open(EmployeeFormDialogComponent, {
+      data,
+      disableClose: true,
+      width: '920px',
+      maxWidth: '96vw',
+      maxHeight: '92vh',
+      panelClass: 'employee-form-dialog-panel'
     });
+  }
+
+  openCreateDialog(): void {
+    const dialogRef = this.openEmployeeDialog({ mode: 'create' });
 
     dialogRef.afterClosed().subscribe((payload?: UpsertEmployeePayload) => {
       if (!payload) {
@@ -103,23 +112,20 @@ export class EmployeeManagementComponent implements OnInit, AfterViewInit {
   }
 
   openEditDialog(employee: Employee): void {
-    const dialogRef = this.dialog.open(EmployeeFormDialogComponent, {
-      data: {
-        mode: 'edit',
-        employee: {
-          employeeNumber: employee.employeeNumber,
-          firstName: employee.firstName,
-          lastName: employee.lastName,
-          email: employee.email,
-          contactNumber: employee.contactNumber,
-          position: employee.position,
-          accountNumber: employee.accountNumber,
-          employmentStatus: employee.employmentStatus,
-          dateOfJoining: employee.dateOfJoining.split('T')[0],
-          departmentId: employee.departmentId
-        }
-      },
-      disableClose: true
+    const dialogRef = this.openEmployeeDialog({
+      mode: 'edit',
+      employee: {
+        employeeNumber: employee.employeeNumber,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        contactNumber: employee.contactNumber,
+        position: employee.position,
+        accountNumber: employee.accountNumber,
+        employmentStatus: employee.employmentStatus,
+        dateOfJoining: employee.dateOfJoining.split('T')[0],
+        departmentId: employee.departmentId
+      }
     });
 
     dialogRef.afterClosed().subscribe((payload?: UpsertEmployeePayload) => {

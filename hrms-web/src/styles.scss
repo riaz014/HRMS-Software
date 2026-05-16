@@ -27,3 +27,14 @@ body {
 	background-color: #1d4ed8;
 	color: #ffffff;
 }
+
+.employee-form-dialog-panel .mat-mdc-dialog-content {
+	max-height: calc(92vh - 170px);
+	overflow: visible;
+}
+
+@media (max-width: 900px) {
+	.employee-form-dialog-panel .mat-mdc-dialog-content {
+		overflow: auto;
+	}
+}
