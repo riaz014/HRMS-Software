@@ -54,7 +54,11 @@ TemporaryDependencyNodeTargetIdentifier=net8.0
 /warnaserror+:NU1605,SYSLIB0011
 
 [sourceFiles]
-Auth/Roles.cs
+Auth/
+ AuthUserAccount.cs
+ IAuthUserStore.cs
+ InMemoryAuthUserStore.cs
+ Roles.cs
 Controllers/
  AuthController.cs
  EmployeeController.cs
@@ -62,6 +66,9 @@ Controllers/
  PayrollController.cs
  SalaryController.cs
 DTOs/Auth/
+ AuthUserDto.cs
+ ChangePasswordRequestDto.cs
+ CreateUserRequestDto.cs
  LoginRequestDto.cs
  LoginResponseDto.cs
 DTOs/Employees/

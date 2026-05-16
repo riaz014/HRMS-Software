@@ -17,6 +17,22 @@ export interface LoginResponse {
   role: string;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface CreateUserRequest {
+  username: string;
+  password: string;
+  role: string;
+}
+
+export interface AuthUserResponse {
+  username: string;
+  role: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -34,6 +50,14 @@ export class ApiService {
 
   login(request: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiBaseUrl}/auth/login`, request);
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiBaseUrl}/auth/change-password`, request);
+  }
+
+  createUser(request: CreateUserRequest): Observable<AuthUserResponse> {
+    return this.http.post<AuthUserResponse>(`${this.apiBaseUrl}/auth/users`, request);
   }
 
   get<T>(endpoint: string, queryParams?: Record<string, string | number | boolean | null | undefined>): Observable<T> {

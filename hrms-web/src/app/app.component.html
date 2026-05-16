@@ -66,13 +66,21 @@
 
         <!-- User Section -->
         <div class="user-section">
-          <div class="user-info">
+          <a routerLink="/profile" class="user-info user-info-link" matTooltip="Open Profile">
             <div class="user-avatar">{{ getUserInitials() }}</div>
             <div class="user-details">
               <span class="username">{{ currentUsername }}</span>
               <span class="user-role">{{ getCurrentRole() }}</span>
             </div>
-          </div>
+          </a>
+          <a
+            routerLink="/help-center"
+            class="help-link-btn"
+            matTooltip="Open Help Center"
+          >
+            <mat-icon>help_outline</mat-icon>
+            <span>Help Center</span>
+          </a>
           <button 
             mat-icon-button 
             (click)="logout()" 

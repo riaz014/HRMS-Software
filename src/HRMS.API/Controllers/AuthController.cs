@@ -1,5 +1,8 @@
+using System.Security.Claims;
+using HRMS.API.Auth;
 using HRMS.API.DTOs.Auth;
 using HRMS.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRMS.API.Controllers;
@@ -11,12 +14,12 @@ namespace HRMS.API.Controllers;
 [Route("api/[controller]")]
 public sealed class AuthController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
+    private readonly IAuthUserStore _authUserStore;
     private readonly ITokenService _tokenService;
 
-    public AuthController(IConfiguration configuration, ITokenService tokenService)
+    public AuthController(IAuthUserStore authUserStore, ITokenService tokenService)
     {
-        _configuration = configuration;
+        _authUserStore = authUserStore;
         _tokenService = tokenService;
     }
 
@@ -28,11 +31,7 @@ public sealed class AuthController : ControllerBase
     [HttpPost("login")]
     public ActionResult<LoginResponseDto> Login([FromBody] LoginRequestDto request)
     {
-        var users = _configuration.GetSection("AuthUsers").Get<List<AuthUser>>() ?? new List<AuthUser>();
-
-        var user = users.FirstOrDefault(x =>
-            string.Equals(x.Username, request.Username, StringComparison.OrdinalIgnoreCase) &&
-            x.Password == request.Password);
+        var user = _authUserStore.ValidateCredentials(request.Username, request.Password);
 
         if (user is null)
         {
@@ -50,10 +49,65 @@ public sealed class AuthController : ControllerBase
         });
     }
 
-    private sealed class AuthUser
+    [Authorize]
+    [HttpPost("change-password")]
+    public IActionResult ChangePassword([FromBody] ChangePasswordRequestDto request)
     {
-        public string Username { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
+        if (string.IsNullOrWhiteSpace(request.CurrentPassword) || string.IsNullOrWhiteSpace(request.NewPassword))
+        {
+            return BadRequest(new { message = "Current and new password are required." });
+        }
+
+        if (request.NewPassword.Length < 6)
+        {
+            return BadRequest(new { message = "New password must be at least 6 characters long." });
+        }
+
+        var username = User.FindFirstValue(ClaimTypes.Name);
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return Unauthorized(new { message = "Invalid user identity." });
+        }
+
+        var updated = _authUserStore.ChangePassword(username, request.CurrentPassword, request.NewPassword);
+        if (!updated)
+        {
+            return BadRequest(new { message = "Current password is incorrect." });
+        }
+
+        return Ok(new { message = "Password updated successfully." });
+    }
+
+    [Authorize(Roles = Roles.Admin)]
+    [HttpPost("users")]
+    public ActionResult<AuthUserDto> CreateUser([FromBody] CreateUserRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password) || string.IsNullOrWhiteSpace(request.Role))
+        {
+            return BadRequest(new { message = "Username, password, and role are required." });
+        }
+
+        if (request.Password.Length < 6)
+        {
+            return BadRequest(new { message = "Password must be at least 6 characters long." });
+        }
+
+        if (!string.Equals(request.Role, Roles.Admin, StringComparison.Ordinal) &&
+            !string.Equals(request.Role, Roles.HrManager, StringComparison.Ordinal))
+        {
+            return BadRequest(new { message = "Role must be Admin or HR_Manager." });
+        }
+
+        var created = _authUserStore.CreateUser(request.Username, request.Password, request.Role);
+        if (created is null)
+        {
+            return Conflict(new { message = "A user with this username already exists." });
+        }
+
+        return Ok(new AuthUserDto
+        {
+            Username = created.Username,
+            Role = created.Role
+        });
     }
 }

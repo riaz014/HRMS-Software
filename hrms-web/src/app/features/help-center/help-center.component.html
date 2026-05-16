@@ -1,0 +1,248 @@
+<section class="help-center-page">
+  <mat-card class="help-hero-card">
+    <div class="hero-top">
+      <p class="eyebrow">Support & Training</p>
+      <h1>Help Center</h1>
+      <p class="hero-subtitle">Learn every HRMS feature with structured guidance, practical workflows, and role-specific best practices.</p>
+    </div>
+
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Current Guidance Mode</span>
+        <strong>{{ roleTitle }}</strong>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Coverage</span>
+        <strong>All Modules</strong>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Access</span>
+        <strong>In-App Navigation</strong>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card class="quick-links-card">
+    <div class="section-title-row">
+      <mat-icon>bolt</mat-icon>
+      <h2>Quick Access</h2>
+    </div>
+    <div class="quick-links-grid">
+      <button class="quick-link" type="button" (click)="scrollToSection('dashboard-guide')">
+        <mat-icon>dashboard</mat-icon>
+        <span>
+          <strong>Dashboard Guide</strong>
+          <small>Overview and shortcuts</small>
+        </span>
+      </button>
+      <button class="quick-link" type="button" (click)="scrollToSection('employees-guide')">
+        <mat-icon>people</mat-icon>
+        <span>
+          <strong>Employee Management</strong>
+          <small>Profiles and lifecycle</small>
+        </span>
+      </button>
+      <button class="quick-link" type="button" (click)="scrollToSection('salary-guide')">
+        <mat-icon>attach_money</mat-icon>
+        <span>
+          <strong>Salary Management</strong>
+          <small>Compensation setup</small>
+        </span>
+      </button>
+      <button class="quick-link" type="button" (click)="scrollToSection('payroll-guide')">
+        <mat-icon>assessment</mat-icon>
+        <span>
+          <strong>Payroll Dashboard</strong>
+          <small>Generate and report</small>
+        </span>
+      </button>
+      <button class="quick-link" type="button" (click)="scrollToSection('activity-guide')">
+        <mat-icon>history</mat-icon>
+        <span>
+          <strong>Activity Log</strong>
+          <small>Audit and tracking</small>
+        </span>
+      </button>
+      <button class="quick-link" type="button" (click)="scrollToSection('role-based-guide')">
+        <mat-icon>admin_panel_settings</mat-icon>
+        <span>
+          <strong>Role-Based Guidance</strong>
+          <small>Admin and HR workflows</small>
+        </span>
+      </button>
+      <button class="quick-link" type="button" (click)="scrollToSection('best-practices')">
+        <mat-icon>tips_and_updates</mat-icon>
+        <span>
+          <strong>Best Practices</strong>
+          <small>Operational excellence</small>
+        </span>
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-card class="guide-card role-card" id="role-based-guide">
+    <div class="section-title-row">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <h2>Role-Based Guidance</h2>
+    </div>
+    <p class="chip-line">Signed in as <span class="role-chip">{{ roleTitle }}</span></p>
+
+    @if (isAdmin) {
+      <h3>Admin responsibilities and workflow</h3>
+      <ol>
+        <li>Start on Dashboard and review all stat cards to identify urgent operational tasks.</li>
+        <li>Use Employee Management to ensure active employee records are up to date before payroll cycles.</li>
+        <li>Validate Salary Management entries for all active employees before month-end processing.</li>
+        <li>Run Payroll Dashboard generation for the target month and verify totals using Monthly Report.</li>
+        <li>Audit system actions from Activity Log, especially failed actions and repeated errors.</li>
+      </ol>
+      <h3>Admin quality checks</h3>
+      <ul>
+        <li>Confirm there are no active employees without salary records before payroll generation.</li>
+        <li>Review payroll totals against expected headcount and compensation trends.</li>
+        <li>Export payslips only after report totals and transaction counts look correct.</li>
+      </ul>
+    }
+
+    @if (isHrManager) {
+      <h3>HR Manager responsibilities and workflow</h3>
+      <ol>
+        <li>Maintain accurate employee lifecycle data: onboarding, profile updates, and deactivation.</li>
+        <li>Keep salary structures updated for revisions, increments, and allowance changes.</li>
+        <li>Coordinate payroll runs by validating input fields (month, year, bonus, deductions) before generation.</li>
+        <li>Use Payroll Dashboard reports to confirm month-specific payroll outcomes.</li>
+        <li>Track operational changes and troubleshooting history through Activity Log entries.</li>
+      </ol>
+      <h3>HR Manager quality checks</h3>
+      <ul>
+        <li>Ensure employee IDs and department data are complete and consistent.</li>
+        <li>Verify salary effective dates align with policy update dates.</li>
+        <li>Check pending review counts regularly and resolve missing data quickly.</li>
+      </ul>
+    }
+
+    @if (!isAdmin && !isHrManager) {
+      <h3>General usage guidance</h3>
+      <p>
+        Your account has limited role metadata. Follow module-level instructions on this page and coordinate with your administrator for role-specific workflows.
+      </p>
+    }
+  </mat-card>
+
+  <mat-card class="guide-card" id="dashboard-guide">
+    <div class="section-title-row">
+      <mat-icon>dashboard</mat-icon>
+      <h2>Dashboard: HRMS Control Center</h2>
+    </div>
+    <p>The dashboard gives a real-time overview of HR operations and quick navigation to all modules.</p>
+    <h3>How to use it</h3>
+    <ol>
+      <li>Open the Dashboard from the top menu.</li>
+      <li>Review the stat cards at the top for employee count, active payroll, and pending reviews.</li>
+      <li>Click any stat card to jump directly to the related module.</li>
+      <li>Use the module cards to open Employee, Salary, or Payroll workflows quickly.</li>
+    </ol>
+    <h3>When to use</h3>
+    <p>Use this page at the start of each day to monitor status and access the next task with one click.</p>
+    <div class="section-actions">
+      <a routerLink="/dashboard" class="action-link">Open Dashboard</a>
+    </div>
+  </mat-card>
+
+  <mat-card class="guide-card" id="employees-guide">
+    <div class="section-title-row">
+      <mat-icon>people</mat-icon>
+      <h2>Employee Management</h2>
+    </div>
+    <p>Manage employee records including adding new staff, updating details, and searching/filtering records.</p>
+    <h3>Common tasks</h3>
+    <ol>
+      <li>Click <strong>Add Employee</strong> to create a new employee profile.</li>
+      <li>Fill required fields carefully: employee number, full name, department, designation, and contact data.</li>
+      <li>Use search and filter controls to find employees quickly.</li>
+      <li>Use edit to update profile data and keep records current.</li>
+      <li>Deactivate records when employees are no longer active.</li>
+    </ol>
+    <h3>Best tip</h3>
+    <p>Always verify employee number uniqueness before saving to avoid payroll conflicts.</p>
+    <div class="section-actions">
+      <a routerLink="/employees" class="action-link">Open Employee Management</a>
+    </div>
+  </mat-card>
+
+  <mat-card class="guide-card" id="salary-guide">
+    <div class="section-title-row">
+      <mat-icon>attach_money</mat-icon>
+      <h2>Salary Management</h2>
+    </div>
+    <p>Define and maintain salary structures that payroll generation depends on.</p>
+    <h3>How to set salary correctly</h3>
+    <ol>
+      <li>Open Salary Management from the navbar.</li>
+      <li>Select employee and enter base salary, bonuses, and allowances.</li>
+      <li>Set effective date ranges for each salary revision.</li>
+      <li>Save the record and verify it appears in the salary list.</li>
+      <li>Update salary records when compensation changes.</li>
+    </ol>
+    <h3>Important note</h3>
+    <p>Payroll generation may skip employees with missing salary records, so keep salary data complete.</p>
+    <div class="section-actions">
+      <a routerLink="/salary" class="action-link">Open Salary Management</a>
+    </div>
+  </mat-card>
+
+  <mat-card class="guide-card" id="payroll-guide">
+    <div class="section-title-row">
+      <mat-icon>assessment</mat-icon>
+      <h2>Payroll Dashboard</h2>
+    </div>
+    <p>Generate monthly payroll, load period-wise reports, and export individual payslips.</p>
+    <h3>End-to-end monthly payroll flow</h3>
+    <ol>
+      <li>Set payroll inputs: year, month, tax %, additional bonus, and additional deductions.</li>
+      <li>Click <strong>Generate Monthly Payroll</strong>.</li>
+      <li>After generation, click <strong>Load Monthly Report</strong> to refresh totals for the selected month.</li>
+      <li>Review Transactions, Gross Total, Deductions Total, and Net Total.</li>
+      <li>Use <strong>Export to PDF</strong> in Recent Payments to download individual payslips.</li>
+    </ol>
+    <h3>Troubleshooting</h3>
+    <p>If report totals look empty, confirm employees have salary records and the selected period is correct.</p>
+    <div class="section-actions">
+      <a routerLink="/payroll-dashboard" class="action-link">Open Payroll Dashboard</a>
+    </div>
+  </mat-card>
+
+  <mat-card class="guide-card" id="activity-guide">
+    <div class="section-title-row">
+      <mat-icon>history</mat-icon>
+      <h2>Activity Log</h2>
+    </div>
+    <p>Track key actions across HRMS modules for audit and operational visibility.</p>
+    <h3>How to analyze activity</h3>
+    <ol>
+      <li>Use search to find actions by employee, user, or action keyword.</li>
+      <li>Filter by module to isolate Employee, Salary, Payroll, or System events.</li>
+      <li>Filter by status to focus on success, pending, or error actions.</li>
+      <li>Use <strong>Clear Filters</strong> to reset and view complete history again.</li>
+    </ol>
+    <h3>Access control</h3>
+    <p>This page is visible to Admin users for oversight and audit workflows.</p>
+    <div class="section-actions">
+      <a routerLink="/activity-log" class="action-link">Open Activity Log</a>
+    </div>
+  </mat-card>
+
+  <mat-card class="guide-card" id="best-practices">
+    <div class="section-title-row">
+      <mat-icon>tips_and_updates</mat-icon>
+      <h2>Best Practices for Smooth HRMS Usage</h2>
+    </div>
+    <ul>
+      <li>Update employee and salary records before generating payroll each month.</li>
+      <li>Use the dashboard cards for quick navigation instead of opening pages manually.</li>
+      <li>Run payroll report after generation to verify totals before exporting payslips.</li>
+      <li>Review activity logs regularly to detect failed actions early.</li>
+      <li>Log out after use, especially on shared systems.</li>
+    </ul>
+  </mat-card>
+</section>

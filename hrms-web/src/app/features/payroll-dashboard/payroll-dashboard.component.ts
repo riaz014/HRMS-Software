@@ -57,7 +57,7 @@ export class PayrollDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadRecentPayments();
-    this.loadMonthlyReport();
+    this.loadMonthlyReport(false);
   }
 
   generateMonthlyPayroll(): void {
@@ -79,7 +79,7 @@ export class PayrollDashboardComponent implements OnInit {
             4000
           );
           this.loadRecentPayments();
-          this.loadMonthlyReport();
+          this.loadMonthlyReport(false);
         },
         error: () => {
           this.toast.error('Failed to generate monthly payroll.', 3500);
@@ -133,7 +133,13 @@ export class PayrollDashboardComponent implements OnInit {
       });
   }
 
-  loadMonthlyReport(): void {
+  loadMonthlyReport(showSuccessToast = true): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.toast.error('Please enter a valid year and month before loading report.', 3000);
+      return;
+    }
+
     const year = this.form.controls.year.value;
     const month = this.form.controls.month.value;
 
@@ -145,6 +151,9 @@ export class PayrollDashboardComponent implements OnInit {
       .subscribe({
         next: (report) => {
           this.monthlyReport = report;
+          if (showSuccessToast) {
+            this.toast.success(`Monthly report loaded for ${month}/${year}.`, 2500);
+          }
         },
         error: () => {
           this.monthlyReport = null;

@@ -33,7 +33,7 @@
         <button mat-flat-button color="primary" type="submit" [disabled]="generating">
           {{ generating ? 'Generating...' : 'Generate Monthly Payroll' }}
         </button>
-        <button mat-stroked-button type="button" (click)="loadMonthlyReport()" [disabled]="loadingReport">
+        <button mat-stroked-button type="button" (click)="loadMonthlyReport(true)" [disabled]="loadingReport">
           {{ loadingReport ? 'Loading Report...' : 'Load Monthly Report' }}
         </button>
       </div>

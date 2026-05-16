@@ -1,0 +1,256 @@
+.help-center-page {
+  padding: 1.75rem;
+  max-width: 1040px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.1rem;
+  text-align: center;
+}
+
+.help-hero-card,
+.quick-links-card,
+.guide-card {
+  border-radius: 16px;
+  border: 1px solid #d9e4f5;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.help-hero-card {
+  background: linear-gradient(140deg, #eef4ff 0%, #ffffff 55%, #f4f8ff 100%);
+
+  .eyebrow {
+    margin: 0;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #4f46e5;
+    font-weight: 700;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #111827;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    margin: 0.5rem 0 0;
+    color: #64748b;
+    font-size: 1rem;
+    line-height: 1.55;
+    max-width: 72ch;
+  }
+}
+
+.hero-meta {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.meta-item {
+  background: #ffffff;
+  border: 1px solid #dbe6f7;
+  border-radius: 12px;
+  padding: 0.8rem 0.9rem;
+
+  .meta-label {
+    display: block;
+    color: #6b7280;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  strong {
+    display: block;
+    margin-top: 0.2rem;
+    color: #1f2937;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+}
+
+.quick-links-card {
+  background: #ffffff;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.role-card {
+  background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%);
+}
+
+.role-chip {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 0.82rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.chip-line {
+  margin-top: 0;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+
+  mat-icon {
+    color: #4f46e5;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.45rem;
+    color: #111827;
+    line-height: 1.2;
+  }
+}
+
+.quick-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.quick-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  text-align: center;
+  width: 100%;
+  border: 1px solid #bfd8ff;
+  cursor: pointer;
+  font: inherit;
+  appearance: none;
+  background: linear-gradient(145deg, #eff6ff 0%, #e8f0ff 100%);
+  color: #1d4ed8;
+  padding: 0.68rem 0.85rem;
+  border-radius: 11px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: linear-gradient(145deg, #dbeafe 0%, #d2e6ff 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(30, 64, 175, 0.14);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.35);
+    outline-offset: 2px;
+  }
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+  span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+
+    strong {
+      font-size: 1rem;
+      line-height: 1.2;
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    small {
+      font-size: 0.74rem;
+      line-height: 1.25;
+      color: #4b638f;
+      font-weight: 600;
+    }
+  }
+}
+
+.guide-card {
+  background: #ffffff;
+
+  h2 {
+    margin: 0;
+  }
+
+  h3 {
+    margin: 1rem 0 0.35rem;
+    font-size: 1rem;
+    color: #1e293b;
+  }
+
+  p {
+    margin: 0.35rem 0;
+    color: #475569;
+    line-height: 1.55;
+  }
+
+  ol,
+  ul {
+    margin: 0.5rem 0 0;
+    padding-left: 0;
+    color: #334155;
+    text-align: center;
+    list-style-position: inside;
+
+    li {
+      margin-bottom: 0.4rem;
+      line-height: 1.5;
+    }
+  }
+}
+
+.section-actions {
+  margin-top: 0.9rem;
+}
+
+.action-link {
+  display: inline-block;
+  text-decoration: none;
+  color: #ffffff;
+  background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+  padding: 0.58rem 0.9rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+
+  &:hover {
+    filter: brightness(1.05);
+  }
+}
+
+@media (max-width: 768px) {
+  .help-center-page {
+    padding: 1rem;
+  }
+
+  .help-hero-card h1 {
+    font-size: 1.55rem;
+  }
+
+  .hero-meta {
+    grid-template-columns: 1fr;
+  }
+}

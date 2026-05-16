@@ -1,0 +1,95 @@
+<section class="profile-page">
+  <mat-card class="profile-hero">
+    <div class="hero-content">
+      <div class="hero-copy">
+        <p class="eyebrow">Account Settings</p>
+        <h1>Profile & Access Center</h1>
+        <p class="hero-subtitle">Manage your account security and, for administrators, provision users with role-based access.</p>
+      </div>
+
+      <div class="identity-grid">
+        <div class="identity-item">
+          <span class="label">Signed in as</span>
+          <strong>{{ currentUsername || 'Unknown User' }}</strong>
+        </div>
+        <div class="identity-item">
+          <span class="label">Role</span>
+          <strong>{{ currentRole || 'Unknown Role' }}</strong>
+        </div>
+        <div class="identity-item">
+          <span class="label">Security</span>
+          <strong>Managed</strong>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card class="profile-card security-card">
+    <div class="card-header">
+      <div class="icon-wrap"><mat-icon>lock</mat-icon></div>
+      <div>
+        <h2>Change Password</h2>
+        <p class="subtext">Use a strong password with at least 6 characters and avoid reusing old passwords.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="passwordForm" (ngSubmit)="submitPasswordChange()" class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Current Password</mat-label>
+        <input matInput type="password" formControlName="currentPassword" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>New Password</mat-label>
+        <input matInput type="password" formControlName="newPassword" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Confirm New Password</mat-label>
+        <input matInput type="password" formControlName="confirmPassword" />
+      </mat-form-field>
+
+      <div class="actions actions-end">
+        <button mat-flat-button color="primary" type="submit" [disabled]="changingPassword">
+          {{ changingPassword ? 'Updating Password...' : 'Update Password' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card class="profile-card admin-card" *ngIf="isAdmin">
+    <div class="card-header">
+      <div class="icon-wrap"><mat-icon>admin_panel_settings</mat-icon></div>
+      <div>
+        <h2>Admin: Create User Access</h2>
+        <p class="subtext">Create application users and assign role access for Admin or HR Manager.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="createUserForm" (ngSubmit)="createUser()" class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Temporary Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Role Access</mat-label>
+        <mat-select formControlName="role">
+          <mat-option value="Admin">Admin</mat-option>
+          <mat-option value="HR_Manager">HR Manager</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="actions actions-end">
+        <button mat-flat-button color="primary" type="submit" [disabled]="creatingUser">
+          {{ creatingUser ? 'Creating User...' : 'Create User' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</section>

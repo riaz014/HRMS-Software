@@ -1,5 +1,6 @@
 using HRMS.Application.Interfaces.Persistence;
 using HRMS.Application.Interfaces.Services;
+using HRMS.API.Auth;
 using HRMS.API.Middleware;
 using HRMS.API.Options;
 using HRMS.Infrastructure.DependencyInjection;
@@ -108,6 +109,7 @@ builder.Services.AddScoped<IPayrollRepository, PayrollRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPayrollGenerationService, PayrollGenerationService>();
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
+builder.Services.AddSingleton<IAuthUserStore, InMemoryAuthUserStore>();
 
 var app = builder.Build();
 
