@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
-import { finalize } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 import { ToastService } from '../../core/services/toast.service';
 import {
@@ -41,6 +41,10 @@ export class PayrollDashboardComponent implements OnInit {
   loadingReport = false;
   generating = false;
 
+  get totalPayrollTransactions(): number {
+    return this.monthlyReport?.totalTransactions ?? 0;
+  }
+
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly apiService: ApiService,
@@ -67,6 +71,7 @@ export class PayrollDashboardComponent implements OnInit {
     }
 
     const payload: GenerateMonthlyPayrollPayload = this.form.getRawValue();
+    const periodLabel = this.getPeriodLabel(payload.month, payload.year);
     this.generating = true;
 
     this.apiService
@@ -74,10 +79,14 @@ export class PayrollDashboardComponent implements OnInit {
       .pipe(finalize(() => (this.generating = false)))
       .subscribe({
         next: (response) => {
-          this.toast.success(
-            `Payroll generated for ${response.generatedCount}/${response.activeEmployeesCount} active employees.`,
-            4000
-          );
+          const message = this.buildPayrollGenerationMessage(response, periodLabel);
+
+          if (response.generatedCount > 0) {
+            this.toast.success(message, 5000);
+          } else {
+            this.toast.info(message, 5000);
+          }
+
           this.loadRecentPayments();
           this.loadMonthlyReport(false);
         },
@@ -120,7 +129,7 @@ export class PayrollDashboardComponent implements OnInit {
     this.loadingRecent = true;
 
     this.apiService
-      .get<RecentPayrollItem[]>('payroll/recent', { take: 20 })
+      .get<RecentPayrollItem[]>('payroll/recent', { take: 20 }, { useCache: false })
       .pipe(finalize(() => (this.loadingRecent = false)))
       .subscribe({
         next: (items) => {
@@ -142,23 +151,117 @@ export class PayrollDashboardComponent implements OnInit {
 
     const year = this.form.controls.year.value;
     const month = this.form.controls.month.value;
+    const periodLabel = this.getPeriodLabel(month, year);
 
     this.loadingReport = true;
 
     this.apiService
-      .get<PayrollReport>('payroll/report', { year, month })
+      .get<PayrollReport>('payroll/report', { year, month }, { useCache: false })
       .pipe(finalize(() => (this.loadingReport = false)))
       .subscribe({
         next: (report) => {
           this.monthlyReport = report;
           if (showSuccessToast) {
-            this.toast.success(`Monthly report loaded for ${month}/${year}.`, 2500);
+            this.toast.success(`Monthly report loaded for ${periodLabel}.`, 2500);
           }
         },
         error: () => {
           this.monthlyReport = null;
-          this.toast.error('Could not load payroll report for the selected period.', 3500);
+          this.toast.error(`Could not load payroll report for ${periodLabel}.`, 3500);
         }
       });
+  }
+
+  async exportMonthlyReportToXlsx(): Promise<void> {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.toast.error('Please enter a valid year and month before exporting.', 3000);
+      return;
+    }
+
+    const year = this.form.controls.year.value;
+    const month = this.form.controls.month.value;
+    const periodLabel = this.getPeriodLabel(month, year);
+
+    this.loadingReport = true;
+
+    let report: PayrollReport;
+    try {
+      report = await firstValueFrom(this.apiService.get<PayrollReport>('payroll/report', { year, month }, { useCache: false }));
+      this.monthlyReport = report;
+    } catch {
+      this.loadingReport = false;
+      this.toast.error(`Could not load payroll report for ${periodLabel}.`, 3500);
+      return;
+    }
+
+    this.loadingReport = false;
+
+    const { utils, writeFile } = await import('xlsx');
+    const exportPeriodLabel = this.getPeriodLabel(report.month, report.year);
+
+    const summaryRows = [
+      { Metric: 'Period', Value: exportPeriodLabel },
+      { Metric: 'Transactions', Value: report.totalTransactions },
+      { Metric: 'Gross Total', Value: report.totalGrossPay },
+      { Metric: 'Deductions Total', Value: report.totalDeductions },
+      { Metric: 'Net Total', Value: report.totalNetPay }
+    ];
+
+    const itemRows = report.items.map((item, index) => ({
+      Sl: index + 1,
+      EmployeeNumber: item.employeeNumber,
+      EmployeeName: item.employeeName,
+      EmployeeId: item.employeeId,
+      Month: report.month,
+      Year: report.year,
+      GrossPay: Number(item.grossPay.toFixed(2)),
+      Deductions: Number(item.deductions.toFixed(2)),
+      NetPay: Number(item.netPay.toFixed(2)),
+      ProcessedAt: new Date(item.processedAtUtc).toLocaleString(),
+      Status: 'Processed'
+    }));
+
+    const workbook = utils.book_new();
+    const summarySheet = utils.json_to_sheet(summaryRows);
+    const itemsSheet = utils.json_to_sheet(itemRows);
+
+    utils.book_append_sheet(workbook, summarySheet, 'Summary');
+    utils.book_append_sheet(workbook, itemsSheet, 'Transactions');
+
+    writeFile(workbook, `payroll-report-${report.year}-${report.month.toString().padStart(2, '0')}.xlsx`);
+    this.toast.success(`All employees salary data exported for ${exportPeriodLabel}.`, 2500);
+  }
+
+  getMonthlyReportPeriodLabel(): string {
+    if (!this.monthlyReport) {
+      return '';
+    }
+
+    return this.getPeriodLabel(this.monthlyReport.month, this.monthlyReport.year);
+  }
+
+  private getPeriodLabel(month: number, year: number): string {
+    const date = new Date(year, Math.max(0, month - 1), 1);
+    const monthName = date.toLocaleString(undefined, { month: 'long' });
+    return `${monthName} ${year}`;
+  }
+
+  private buildPayrollGenerationMessage(response: GenerateMonthlyPayrollResponse, periodLabel: string): string {
+    if (response.generatedCount === 0 && response.updatedCount === 0) {
+      if (response.skippedNoSalaryCount === 0) {
+        return `No new payroll generated for ${periodLabel}. Payroll for all ${response.activeEmployeesCount} active employees is already processed.`;
+      }
+
+      return `No payroll generated for ${periodLabel}. Missing salary setup: ${response.skippedNoSalaryCount}. Active employees: ${response.activeEmployeesCount}.`;
+    }
+
+    return [
+      `Payroll run completed for ${periodLabel}.`,
+      `Generated: ${response.generatedCount}`,
+      `Updated: ${response.updatedCount}`,
+      `Skipped (no salary setup): ${response.skippedNoSalaryCount}`,
+      `Active employees: ${response.activeEmployeesCount}`
+    ].join(' ');
   }
 }

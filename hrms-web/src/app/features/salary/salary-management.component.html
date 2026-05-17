@@ -1,6 +1,7 @@
 <section class="salary-page">
   <mat-toolbar color="primary" class="salary-toolbar">
     <span>Salary Management</span>
+    <span class="count-pill">{{ totalSalaryRecords }}</span>
     <span class="spacer"></span>
     <button mat-flat-button class="add-btn" (click)="openCreateDialog()">
       <mat-icon>add_card</mat-icon>

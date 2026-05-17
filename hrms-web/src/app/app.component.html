@@ -44,23 +44,26 @@
         <nav class="nav-menu">
           <a routerLink="/dashboard" routerLinkActive="active-link" class="nav-link">
             <mat-icon>dashboard</mat-icon>
-            <span>Dashboard</span>
+            <span class="nav-label">Dashboard</span>
           </a>
           <a routerLink="/employees" routerLinkActive="active-link" class="nav-link">
             <mat-icon>people</mat-icon>
-            <span>Employees</span>
+            <span class="nav-label">Employees</span>
+            <span class="nav-count">{{ employeeCount }}</span>
           </a>
           <a routerLink="/salary" routerLinkActive="active-link" class="nav-link">
             <mat-icon>attach_money</mat-icon>
-            <span>Salary</span>
+            <span class="nav-label">Salary</span>
+            <span class="nav-count">{{ salaryCount }}</span>
           </a>
           <a routerLink="/payroll-dashboard" routerLinkActive="active-link" class="nav-link">
             <mat-icon>assessment</mat-icon>
-            <span>Payroll</span>
+            <span class="nav-label">Payroll</span>
+            <span class="nav-count">{{ payrollCount }}</span>
           </a>
           <a *ngIf="currentRole === 'Admin'" routerLink="/activity-log" routerLinkActive="active-link" class="nav-link">
             <mat-icon>history</mat-icon>
-            <span>Activity Log</span>
+            <span class="nav-label">Activity Log</span>
           </a>
         </nav>
 

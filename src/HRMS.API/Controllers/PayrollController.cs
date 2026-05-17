@@ -109,6 +109,7 @@ public sealed class PayrollController : ControllerBase
             Month = request.Month,
             ActiveEmployeesCount = result.ActiveEmployeesCount,
             GeneratedCount = result.GeneratedCount,
+            UpdatedCount = result.UpdatedCount,
             SkippedExistingCount = result.SkippedExistingCount,
             SkippedNoSalaryCount = result.SkippedNoSalaryCount
         });

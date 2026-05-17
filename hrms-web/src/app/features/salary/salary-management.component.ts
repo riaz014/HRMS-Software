@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -39,6 +40,7 @@ export class SalaryManagementComponent implements OnInit {
   readonly displayedColumns = ['employee', 'base', 'allowance', 'deduction', 'total', 'effectiveFrom', 'effectiveTo', 'actions'];
   readonly dataSource = new MatTableDataSource<SalaryResponse>([]);
   loading = false;
+  totalSalaryRecords = 0;
 
   constructor(
     private readonly apiService: ApiService,
@@ -75,7 +77,7 @@ export class SalaryManagementComponent implements OnInit {
           this.toast.success('Salary revision created successfully.');
           this.loadSalaries();
         },
-        error: () => this.toast.error('Failed to create salary revision.')
+        error: (error) => this.toast.error(this.getApiErrorMessage(error, 'Failed to create salary revision.'))
       });
     });
   }
@@ -96,7 +98,7 @@ export class SalaryManagementComponent implements OnInit {
           this.toast.success('Salary updated successfully.');
           this.loadSalaries();
         },
-        error: () => this.toast.error('Failed to update salary.')
+        error: (error) => this.toast.error(this.getApiErrorMessage(error, 'Failed to update salary.'))
       });
     });
   }
@@ -113,7 +115,7 @@ export class SalaryManagementComponent implements OnInit {
         this.toast.success('Salary record deleted.');
         this.loadSalaries();
       },
-      error: () => this.toast.error('Failed to delete salary record.')
+      error: (error) => this.toast.error(this.getApiErrorMessage(error, 'Failed to delete salary record.'))
     });
   }
 
@@ -121,16 +123,48 @@ export class SalaryManagementComponent implements OnInit {
     this.loading = true;
 
     this.apiService
-      .get<SalaryResponse[]>('salary')
+      .get<SalaryResponse[]>('salary', undefined, { useCache: false })
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (rows) => {
           this.dataSource.data = rows;
+          this.totalSalaryRecords = rows.length;
         },
-        error: () => {
+        error: (error) => {
           this.dataSource.data = [];
-          this.toast.error('Could not load salary records.');
+          this.totalSalaryRecords = 0;
+          this.toast.error(this.getApiErrorMessage(error, 'Could not load salary records.'));
         }
       });
+  }
+
+  private getApiErrorMessage(error: unknown, fallback: string): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return fallback;
+    }
+
+    const payload = error.error as { message?: string; errors?: Record<string, string[] | string> } | null;
+
+    if (payload?.message && payload.message.trim().length > 0) {
+      return payload.message;
+    }
+
+    if (payload?.errors) {
+      const firstKey = Object.keys(payload.errors)[0];
+
+      if (firstKey) {
+        const firstError = payload.errors[firstKey];
+
+        if (Array.isArray(firstError) && firstError.length > 0 && firstError[0].trim().length > 0) {
+          return firstError[0];
+        }
+
+        if (typeof firstError === 'string' && firstError.trim().length > 0) {
+          return firstError;
+        }
+      }
+    }
+
+    return fallback;
   }
 }

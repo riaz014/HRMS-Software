@@ -4,8 +4,16 @@
   <mat-dialog-content>
     <div class="form-grid">
       <mat-form-field appearance="outline">
-        <mat-label>Employee ID</mat-label>
-        <input matInput type="number" formControlName="employeeId" />
+        <mat-label>Employee Number</mat-label>
+        <mat-select formControlName="employeeId" [disabled]="loadingEmployees || data.mode === 'edit'">
+          @for (employee of employees; track employee.id) {
+            <mat-option [value]="employee.id">{{ employee.employeeNumber }} - {{ employee.fullName }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint *ngIf="loadingEmployees">Loading employees...</mat-hint>
+        <mat-error *ngIf="form.controls.employeeId.hasError('required') || form.controls.employeeId.hasError('min')">
+          Select an employee number.
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline">

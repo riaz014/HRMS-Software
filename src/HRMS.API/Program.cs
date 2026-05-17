@@ -4,9 +4,12 @@ using HRMS.API.Auth;
 using HRMS.API.Middleware;
 using HRMS.API.Options;
 using HRMS.Infrastructure.DependencyInjection;
+using HRMS.Infrastructure.Persistence;
 using HRMS.Infrastructure.Persistence.Repositories;
 using HRMS.Infrastructure.Security;
 using HRMS.Infrastructure.Services;
+using HRMS.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
@@ -113,6 +116,8 @@ builder.Services.AddSingleton<IAuthUserStore, InMemoryAuthUserStore>();
 
 var app = builder.Build();
 
+await EnsureDepartmentCatalogAsync(app);
+
 app.UseGlobalExceptionHandler();
 
 if (app.Environment.IsDevelopment())
@@ -132,3 +137,53 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static async Task EnsureDepartmentCatalogAsync(WebApplication app)
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    if (!await dbContext.Database.CanConnectAsync())
+    {
+        return;
+    }
+
+    var requiredDepartments = new[]
+    {
+        new Department { Name = "Faculty", Description = "Academic faculty and teaching staff." },
+        new Department { Name = "Software Development", Description = "University software systems and development team." },
+        new Department { Name = "Human Resources", Description = "Recruitment, employee relations, and HR operations." },
+        new Department { Name = "Administration", Description = "Administrative support and office management." },
+        new Department { Name = "Admissions and Records", Description = "Admissions processing and student records management." },
+        new Department { Name = "Finance and Accounts", Description = "Budgeting, payroll finance, and accounting operations." },
+        new Department { Name = "IT Services", Description = "Campus IT infrastructure, helpdesk, and operations." },
+        new Department { Name = "Library Services", Description = "Library operations and academic resource services." },
+        new Department { Name = "Student Affairs", Description = "Student support services, wellbeing, and engagement." },
+        new Department { Name = "Research and Innovation", Description = "Research programs, grants, and innovation management." },
+        new Department { Name = "Facilities and Maintenance", Description = "Campus facilities, maintenance, and infrastructure upkeep." },
+        new Department { Name = "Procurement", Description = "Purchasing, vendor management, and procurement compliance." },
+        new Department { Name = "Quality Assurance", Description = "Academic and administrative quality assurance activities." },
+        new Department { Name = "Examination Cell", Description = "Examination scheduling, processing, and result management." }
+    };
+
+    var existingNames = await dbContext.Departments
+        .AsNoTracking()
+        .Select(x => x.Name)
+        .ToListAsync();
+
+    var existingNameSet = existingNames
+        .Select(x => x.Trim())
+        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    var missingDepartments = requiredDepartments
+        .Where(x => !existingNameSet.Contains(x.Name))
+        .ToList();
+
+    if (missingDepartments.Count == 0)
+    {
+        return;
+    }
+
+    await dbContext.Departments.AddRangeAsync(missingDepartments);
+    await dbContext.SaveChangesAsync();
+}

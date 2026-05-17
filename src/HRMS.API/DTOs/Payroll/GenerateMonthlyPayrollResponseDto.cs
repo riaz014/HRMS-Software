@@ -6,6 +6,7 @@ public sealed class GenerateMonthlyPayrollResponseDto
     public int Month { get; set; }
     public int ActiveEmployeesCount { get; set; }
     public int GeneratedCount { get; set; }
+    public int UpdatedCount { get; set; }
     public int SkippedExistingCount { get; set; }
     public int SkippedNoSalaryCount { get; set; }
 }

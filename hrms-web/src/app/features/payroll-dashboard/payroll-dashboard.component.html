@@ -1,6 +1,6 @@
 <section class="dashboard-page">
   <mat-card class="generate-card">
-    <h2>Payroll Dashboard</h2>
+    <h2>Payroll Dashboard <span class="count-pill">{{ totalPayrollTransactions }}</span></h2>
     <p class="muted">Generate monthly payroll and monitor recent payment processing status.</p>
 
     <form [formGroup]="form" class="controls-grid" (ngSubmit)="generateMonthlyPayroll()">
@@ -36,10 +36,14 @@
         <button mat-stroked-button type="button" (click)="loadMonthlyReport(true)" [disabled]="loadingReport">
           {{ loadingReport ? 'Loading Report...' : 'Load Monthly Report' }}
         </button>
+        <button mat-stroked-button type="button" color="accent" (click)="exportMonthlyReportToXlsx()" [disabled]="loadingReport">
+          Download All Employees Salary (XLSX)
+        </button>
       </div>
     </form>
 
     @if (monthlyReport) {
+      <p class="muted report-period">Showing monthly report for <strong>{{ getMonthlyReportPeriodLabel() }}</strong>.</p>
       <div class="summary-grid">
         <div class="summary-item">
           <span class="label">Transactions</span>

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -37,12 +38,13 @@ import { EmployeeFormDialogData } from './components/employee-form-dialog.compon
   styleUrl: './employee-management.component.scss'
 })
 export class EmployeeManagementComponent implements OnInit, AfterViewInit {
-  readonly displayedColumns = ['employeeNumber', 'fullName', 'position', 'contactNumber', 'accountNumber', 'departmentName', 'dateOfJoining', 'employmentStatus', 'actions'];
+  readonly displayedColumns = ['serial', 'employeeNumber', 'fullName', 'position', 'contactNumber', 'email', 'accountNumber', 'departmentName', 'dateOfJoining', 'employmentStatus', 'actions'];
   readonly dataSource = new MatTableDataSource<Employee>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
 
   loading = false;
+  totalEmployees = 0;
 
   constructor(
     private readonly apiService: ApiService,
@@ -106,7 +108,7 @@ export class EmployeeManagementComponent implements OnInit, AfterViewInit {
             this.toast.success('Employee created successfully.', 2500);
             this.loadEmployees();
           },
-          error: () => this.toast.error('Failed to create employee.', 3000)
+          error: (error) => this.toast.error(this.getApiErrorMessage(error, 'Failed to create employee.'), 3500)
         });
     });
   }
@@ -140,7 +142,7 @@ export class EmployeeManagementComponent implements OnInit, AfterViewInit {
             this.toast.success('Employee updated successfully.', 2500);
             this.loadEmployees();
           },
-          error: () => this.toast.error('Failed to update employee.', 3000)
+          error: (error) => this.toast.error(this.getApiErrorMessage(error, 'Failed to update employee.'), 3500)
         });
     });
   }
@@ -157,7 +159,7 @@ export class EmployeeManagementComponent implements OnInit, AfterViewInit {
         this.toast.success('Employee deleted.', 2500);
         this.loadEmployees();
       },
-      error: () => this.toast.error('Failed to delete employee.', 3000)
+      error: (error) => this.toast.error(this.getApiErrorMessage(error, 'Failed to delete employee.'), 3500)
     });
   }
 
@@ -165,15 +167,46 @@ export class EmployeeManagementComponent implements OnInit, AfterViewInit {
     this.loading = true;
 
     this.apiService
-      .get<Employee[]>('employee')
+      .get<Employee[]>('employee', undefined, { useCache: false })
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (employees) => {
           this.dataSource.data = employees;
+          this.totalEmployees = employees.length;
         },
-        error: () => {
-          this.toast.error('Unable to load employees.', 3000);
+        error: (error) => {
+          this.toast.error(this.getApiErrorMessage(error, 'Unable to load employees.'), 3500);
         }
       });
+  }
+
+  private getApiErrorMessage(error: unknown, fallback: string): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return fallback;
+    }
+
+    const payload = error.error as { message?: string; errors?: Record<string, string[] | string> } | null;
+
+    if (payload?.message && payload.message.trim().length > 0) {
+      return payload.message;
+    }
+
+    if (payload?.errors) {
+      const firstKey = Object.keys(payload.errors)[0];
+
+      if (firstKey) {
+        const firstError = payload.errors[firstKey];
+
+        if (Array.isArray(firstError) && firstError.length > 0 && firstError[0].trim().length > 0) {
+          return firstError[0];
+        }
+
+        if (typeof firstError === 'string' && firstError.trim().length > 0) {
+          return firstError;
+        }
+      }
+    }
+
+    return fallback;
   }
 }

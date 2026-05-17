@@ -24,9 +24,12 @@ public sealed class PayrollGenerationService : IPayrollGenerationService
         }
 
         var payrollPeriod = new DateTime(request.Year, request.Month, 1);
+        var periodStart = payrollPeriod;
+        var periodEnd = payrollPeriod.AddMonths(1).AddDays(-1);
         var activeEmployees = await _unitOfWork.Employees.GetActiveEmployeesAsync(cancellationToken);
 
         var generatedCount = 0;
+        var updatedCount = 0;
         var skippedExistingCount = 0;
         var skippedNoSalaryCount = 0;
 
@@ -38,16 +41,10 @@ public sealed class PayrollGenerationService : IPayrollGenerationService
                 request.Month,
                 cancellationToken);
 
-            if (existingPayroll is not null)
-            {
-                skippedExistingCount++;
-                continue;
-            }
-
             var salary = (await _unitOfWork.Salaries.FindAsync(
                     x => x.EmployeeId == employee.Id
-                        && x.EffectiveFrom <= payrollPeriod
-                        && (!x.EffectiveTo.HasValue || x.EffectiveTo >= payrollPeriod),
+                        && x.EffectiveFrom <= periodEnd
+                        && (!x.EffectiveTo.HasValue || x.EffectiveTo >= periodStart),
                     cancellationToken))
                 .OrderByDescending(x => x.EffectiveFrom)
                 .FirstOrDefault();
@@ -66,6 +63,20 @@ public sealed class PayrollGenerationService : IPayrollGenerationService
             var totalDeductions = Math.Round(taxes + salary.DeductionAmount + request.AdditionalDeductions, 2, MidpointRounding.AwayFromZero);
             var netPay = Math.Round(grossPay - totalDeductions, 2, MidpointRounding.AwayFromZero);
 
+            if (existingPayroll is not null)
+            {
+                existingPayroll.SalaryId = salary.Id;
+                existingPayroll.GrossPay = grossPay;
+                existingPayroll.Deductions = totalDeductions;
+                existingPayroll.NetPay = netPay;
+                existingPayroll.ProcessedAtUtc = DateTime.UtcNow;
+                existingPayroll.UpdatedAtUtc = DateTime.UtcNow;
+
+                _unitOfWork.Payrolls.Update(existingPayroll);
+                updatedCount++;
+                continue;
+            }
+
             var payrollTransaction = new Payroll
             {
                 EmployeeId = employee.Id,
@@ -83,7 +94,7 @@ public sealed class PayrollGenerationService : IPayrollGenerationService
             generatedCount++;
         }
 
-        if (generatedCount > 0)
+        if (generatedCount > 0 || updatedCount > 0)
         {
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
@@ -92,6 +103,7 @@ public sealed class PayrollGenerationService : IPayrollGenerationService
         {
             ActiveEmployeesCount = activeEmployees.Count,
             GeneratedCount = generatedCount,
+            UpdatedCount = updatedCount,
             SkippedExistingCount = skippedExistingCount,
             SkippedNoSalaryCount = skippedNoSalaryCount
         };
@@ -120,6 +132,8 @@ public sealed class PayrollGenerationService : IPayrollGenerationService
         foreach (var (year, month) in monthsToRegenerate)
         {
             var payrollPeriod = new DateTime(year, month, 1);
+            var periodStart = payrollPeriod;
+            var periodEnd = payrollPeriod.AddMonths(1).AddDays(-1);
             
             // Delete existing payroll for this employee in this period
             var existingPayrolls = await _unitOfWork.Payrolls.FindAsync(
@@ -136,8 +150,8 @@ public sealed class PayrollGenerationService : IPayrollGenerationService
             // Find current salary for this period
             var salary = (await _unitOfWork.Salaries.FindAsync(
                     x => x.EmployeeId == employeeId
-                        && x.EffectiveFrom <= payrollPeriod
-                        && (!x.EffectiveTo.HasValue || x.EffectiveTo >= payrollPeriod),
+                        && x.EffectiveFrom <= periodEnd
+                        && (!x.EffectiveTo.HasValue || x.EffectiveTo >= periodStart),
                     cancellationToken))
                 .OrderByDescending(x => x.EffectiveFrom)
                 .FirstOrDefault();

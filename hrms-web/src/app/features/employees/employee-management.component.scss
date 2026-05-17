@@ -14,6 +14,19 @@
   flex: 1 1 auto;
 }
 
+.count-pill {
+  margin-left: 10px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
 .add-btn {
   background: #fff;
   color: #0f172a;

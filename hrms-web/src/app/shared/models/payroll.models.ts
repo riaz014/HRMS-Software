@@ -11,6 +11,7 @@ export interface GenerateMonthlyPayrollResponse {
   month: number;
   activeEmployeesCount: number;
   generatedCount: number;
+  updatedCount: number;
   skippedExistingCount: number;
   skippedNoSalaryCount: number;
 }
