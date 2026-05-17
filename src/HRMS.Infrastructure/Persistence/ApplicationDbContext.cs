@@ -11,6 +11,7 @@ public sealed class ApplicationDbContext : DbContext
     }
 
     public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<AuthUser> AuthUsers => Set<AuthUser>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Salary> Salaries => Set<Salary>();
     public DbSet<Payroll> Payrolls => Set<Payroll>();

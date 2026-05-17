@@ -112,11 +112,11 @@ builder.Services.AddScoped<IPayrollRepository, PayrollRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPayrollGenerationService, PayrollGenerationService>();
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
-builder.Services.AddSingleton<IAuthUserStore, InMemoryAuthUserStore>();
+builder.Services.AddScoped<IAuthUserStore, DatabaseAuthUserStore>();
 
 var app = builder.Build();
 
-await EnsureDepartmentCatalogAsync(app);
+await EnsureDatabaseSeedDataAsync(app);
 
 app.UseGlobalExceptionHandler();
 
@@ -138,10 +138,12 @@ app.MapControllers();
 
 app.Run();
 
-static async Task EnsureDepartmentCatalogAsync(WebApplication app)
+static async Task EnsureDatabaseSeedDataAsync(WebApplication app)
 {
     await using var scope = app.Services.CreateAsyncScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    await dbContext.Database.MigrateAsync();
 
     if (!await dbContext.Database.CanConnectAsync())
     {
@@ -181,9 +183,53 @@ static async Task EnsureDepartmentCatalogAsync(WebApplication app)
 
     if (missingDepartments.Count == 0)
     {
+        await EnsureAuthUsersAsync(app, dbContext);
         return;
     }
 
     await dbContext.Departments.AddRangeAsync(missingDepartments);
+    await dbContext.SaveChangesAsync();
+    await EnsureAuthUsersAsync(app, dbContext);
+}
+
+static async Task EnsureAuthUsersAsync(WebApplication app, ApplicationDbContext dbContext)
+{
+    var configuredUsers = app.Configuration.GetSection("AuthUsers").Get<List<AuthUserAccount>>() ?? new List<AuthUserAccount>();
+
+    var validConfiguredUsers = configuredUsers
+        .Where(x => !string.IsNullOrWhiteSpace(x.Username) && !string.IsNullOrWhiteSpace(x.Password) && !string.IsNullOrWhiteSpace(x.Role))
+        .Select(x => new AuthUser
+        {
+            Username = x.Username.Trim(),
+            Password = x.Password,
+            Role = x.Role.Trim(),
+            CreatedAtUtc = DateTime.UtcNow
+        })
+        .ToList();
+
+    if (validConfiguredUsers.Count == 0)
+    {
+        return;
+    }
+
+    var existingUsernames = await dbContext.AuthUsers
+        .AsNoTracking()
+        .Select(x => x.Username)
+        .ToListAsync();
+
+    var existingUsernameSet = existingUsernames
+        .Select(x => x.Trim())
+        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    var missingUsers = validConfiguredUsers
+        .Where(x => !existingUsernameSet.Contains(x.Username))
+        .ToList();
+
+    if (missingUsers.Count == 0)
+    {
+        return;
+    }
+
+    await dbContext.AuthUsers.AddRangeAsync(missingUsers);
     await dbContext.SaveChangesAsync();
 }
