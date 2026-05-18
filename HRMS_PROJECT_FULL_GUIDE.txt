@@ -1,0 +1,800 @@
+HRMS PROJECT FULL GUIDE
+=======================
+
+1. PROJECT PURPOSE
+------------------
+This project is a Human Resource Management System (HRMS) with:
+- employee management
+- salary management
+- payroll generation and reporting
+- admin and HR user management
+- JWT-based authentication and authorization
+
+The system has two main parts:
+- Frontend: Angular 18 application in hrms-web
+- Backend: ASP.NET Core .NET 8 Web API in src/HRMS.API
+
+The backend stores data in SQL Server through Entity Framework Core.
+
+
+2. FULL TECH STACK
+------------------
+Frontend:
+- Angular 18
+- Angular Material
+- Standalone components
+- RxJS
+- jspdf for PDF export
+- xlsx for Excel export
+- Angular SSR support with Express in server.ts
+
+Backend:
+- ASP.NET Core .NET 8 Web API
+- Entity Framework Core
+- SQL Server
+- JWT authentication
+- Swagger support in Development
+
+Database:
+- SQL Server instance from appsettings.json
+- Current configured connection string:
+  Server=localhost\SQLEXPRESS02;Database=HRMSDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
+
+
+3. HIGH LEVEL ARCHITECTURE
+--------------------------
+Frontend sends HTTP requests to backend API.
+Backend validates JWT token and role permissions.
+Backend uses repositories + services + Entity Framework Core to read/write SQL Server.
+Backend returns JSON responses.
+Frontend renders tables, forms, cards, dialogs, reports, PDF, and XLSX exports.
+
+Main folders:
+- hrms-web = Angular frontend
+- src/HRMS.API = API host, controllers, JWT, middleware
+- src/HRMS.Application = interfaces and application contracts
+- src/HRMS.Domain = entities
+- src/HRMS.Infrastructure = EF Core, repositories, services, persistence
+
+
+4. HOW THE FRONTEND WORKS
+-------------------------
+4.1 Frontend startup
+- Entry config is in hrms-web/src/app/app.config.ts
+- Router is configured in hrms-web/src/app/app.routes.ts
+- HTTP interceptor is configured in hrms-web/src/app/core/interceptors/auth.interceptor.ts
+- SSR Express wrapper is in hrms-web/server.ts
+
+4.2 Frontend routes
+The frontend routes are:
+- /login
+- /dashboard
+- /employees
+- /salary
+- /payroll-dashboard
+- /activity-log
+- /help-center
+- /profile
+
+Route file:
+- hrms-web/src/app/app.routes.ts
+
+4.3 Authentication on frontend
+Files involved:
+- hrms-web/src/app/core/services/auth.service.ts
+- hrms-web/src/app/core/services/api.service.ts
+- hrms-web/src/app/core/guards/auth.guard.ts
+- hrms-web/src/app/core/interceptors/auth.interceptor.ts
+
+Flow:
+1. User logs in from Login page.
+2. Frontend calls POST /api/auth/login.
+3. Backend returns JWT token.
+4. Token is stored in localStorage key hrms_access_token.
+5. User object is stored in localStorage key hrms_user.
+6. authInterceptor attaches Authorization: Bearer <token> header to outgoing API requests.
+7. authGuard protects authenticated pages.
+8. loginGuard prevents already logged-in users from returning to login page.
+
+4.4 Main frontend modules
+Dashboard:
+- file: hrms-web/src/app/features/dashboard/dashboard.component.ts
+- Shows summary cards and module cards
+- Calls employee, salary, and payroll APIs to show counts/statistics
+
+Employees:
+- file: hrms-web/src/app/features/employees/employee-management.component.ts
+- Add, edit, delete employees
+- Uses dialog form component
+- Department dropdown is loaded from department API
+
+Salary:
+- file: hrms-web/src/app/features/salary/salary-management.component.ts
+- Add, edit, delete salary revisions
+- Employee is selected by employee number in the salary dialog
+- EffectiveFrom and EffectiveTo determine salary validity period
+
+Payroll:
+- file: hrms-web/src/app/features/payroll-dashboard/payroll-dashboard.component.ts
+- Generate monthly payroll
+- Load monthly payroll report
+- Show recent payroll transactions
+- Export payslip PDF
+- Export monthly payroll report XLSX
+
+Profile:
+- admin can create users
+- change password
+- file: hrms-web/src/app/features/profile/profile.component.ts
+
+Activity Log:
+- currently mostly mock/demo behavior
+- there is no full backend activity log API implemented yet
+
+Help Center:
+- UI module only
+
+4.5 Shared API service
+File:
+- hrms-web/src/app/core/services/api.service.ts
+
+This is the main HTTP abstraction used by the frontend.
+It contains:
+- login()
+- changePassword()
+- createUser()
+- getUsers()
+- resetUserPassword()
+- generic get()
+- generic post()
+- generic put()
+- generic delete()
+
+It also contains GET response caching.
+Important detail:
+- some screens now use useCache: false to force fresh data after create/update/delete actions.
+
+
+5. HOW THE BACKEND WORKS
+------------------------
+5.1 API startup
+Main file:
+- src/HRMS.API/Program.cs
+
+Program.cs does these things:
+- loads JWT options from appsettings.json
+- configures controllers
+- configures CORS for frontend origins
+- configures Swagger in Development
+- configures JWT authentication and authorization
+- registers repositories and services
+- registers the auth user store
+- ensures database migrations are applied on startup
+- seeds departments if missing
+- seeds configured auth users if missing
+
+5.2 Middleware
+Global exception middleware files:
+- src/HRMS.API/Middleware/GlobalExceptionHandlerMiddleware.cs
+- src/HRMS.API/Middleware/GlobalExceptionHandlerExtensions.cs
+
+This gives consistent API error responses.
+
+5.3 Layers
+Domain:
+- entities only
+
+Application:
+- interfaces and models
+
+Infrastructure:
+- EF Core DbContext
+- repository implementations
+- payroll service
+- security/token generation
+
+API:
+- controllers
+- DTOs
+- mappings
+- JWT/auth setup
+
+5.4 Repository pattern
+Important interfaces and implementations:
+- IUnitOfWork
+- IGenericRepository<T>
+- EmployeeRepository
+- SalaryRepository
+- PayrollRepository
+- UnitOfWork
+
+The controllers usually talk to repositories through IUnitOfWork.
+
+5.5 Services
+Main service classes:
+- PayrollGenerationService
+- JwtTokenService
+- DatabaseAuthUserStore
+
+
+6. DATABASE STRUCTURE
+---------------------
+Main entity files:
+- src/HRMS.Domain/Entities/BaseEntity.cs
+- src/HRMS.Domain/Entities/Department.cs
+- src/HRMS.Domain/Entities/Employee.cs
+- src/HRMS.Domain/Entities/Salary.cs
+- src/HRMS.Domain/Entities/Payroll.cs
+- src/HRMS.Domain/Entities/AuthUser.cs
+
+Current important tables:
+- Departments
+- Employees
+- Salaries
+- PayrollTransactions
+- AuthUsers
+- __EFMigrationsHistory
+
+6.1 Departments table
+Stores department names.
+Examples include Faculty, Software Development, Human Resources, Administration, Admissions and Records, etc.
+This is auto-seeded on startup.
+
+6.2 Employees table
+Stores employee master data:
+- EmployeeNumber
+- FirstName
+- LastName
+- Email
+- ContactNumber
+- Position
+- AccountNumber
+- EmploymentStatus
+- DateOfJoining
+- IsActive
+- DepartmentId
+
+Important constraints:
+- EmployeeNumber unique
+- Email unique
+- AccountNumber unique
+
+6.3 Salaries table
+Stores salary revisions per employee.
+Fields include:
+- EmployeeId
+- BasicAmount
+- AllowanceAmount
+- DeductionAmount
+- EffectiveFrom
+- EffectiveTo
+
+One employee can have multiple salary rows over time.
+The current salary is usually the row where EffectiveTo is null, but payroll logic now also supports month overlap.
+
+6.4 PayrollTransactions table
+Stores generated payroll output per employee per month.
+Fields include:
+- EmployeeId
+- SalaryId
+- PayrollYear
+- PayrollMonth
+- GrossPay
+- Deductions
+- NetPay
+- ProcessedAtUtc
+
+6.5 AuthUsers table
+Stores application login users permanently in SQL.
+Fields include:
+- Username
+- Password
+- Role
+- CreatedAtUtc
+- UpdatedAtUtc
+
+This replaced the old in-memory-only user storage so admin-created users survive restart.
+
+
+7. HOW TO CHECK THE DATABASE
+----------------------------
+Recommended tool:
+- SQL Server Management Studio (SSMS)
+
+Connection details from appsettings.json:
+- Server: localhost\SQLEXPRESS02
+- Database: HRMSDb
+- Authentication: Windows Authentication because Trusted_Connection=True
+
+7.1 Tables to inspect
+Open database HRMSDb and inspect:
+- dbo.Departments
+- dbo.Employees
+- dbo.Salaries
+- dbo.PayrollTransactions
+- dbo.AuthUsers
+- dbo.__EFMigrationsHistory
+
+7.2 Useful SQL queries
+Check employees:
+SELECT * FROM Employees ORDER BY Id;
+
+Check salaries:
+SELECT * FROM Salaries ORDER BY EmployeeId, EffectiveFrom DESC;
+
+Check payroll:
+SELECT * FROM PayrollTransactions ORDER BY PayrollYear DESC, PayrollMonth DESC, EmployeeId;
+
+Check users:
+SELECT * FROM AuthUsers ORDER BY Username;
+
+Check departments:
+SELECT * FROM Departments ORDER BY Name;
+
+Check salary joined with employee:
+SELECT s.*, e.EmployeeNumber, e.FirstName, e.LastName
+FROM Salaries s
+INNER JOIN Employees e ON e.Id = s.EmployeeId
+ORDER BY e.EmployeeNumber, s.EffectiveFrom DESC;
+
+Check payroll joined with employee:
+SELECT p.*, e.EmployeeNumber, e.FirstName, e.LastName
+FROM PayrollTransactions p
+INNER JOIN Employees e ON e.Id = p.EmployeeId
+ORDER BY p.PayrollYear DESC, p.PayrollMonth DESC, e.EmployeeNumber;
+
+
+8. HOW MANY APIS ARE THERE
+--------------------------
+There are currently 20 API endpoints.
+
+8.1 AuthController endpoints = 5
+Controller file:
+- src/HRMS.API/Controllers/AuthController.cs
+
+Endpoints:
+1. POST /api/auth/login
+2. POST /api/auth/change-password
+3. POST /api/auth/users
+4. GET /api/auth/users
+5. POST /api/auth/users/reset-password
+
+8.2 DepartmentController endpoints = 1
+Controller file:
+- src/HRMS.API/Controllers/DepartmentController.cs
+
+Endpoints:
+6. GET /api/department
+
+8.3 EmployeeController endpoints = 5
+Controller file:
+- src/HRMS.API/Controllers/EmployeeController.cs
+
+Endpoints:
+7. GET /api/employee
+8. GET /api/employee/{id}
+9. POST /api/employee
+10. PUT /api/employee/{id}
+11. DELETE /api/employee/{id}
+
+8.4 SalaryController endpoints = 5
+Controller file:
+- src/HRMS.API/Controllers/SalaryController.cs
+
+Endpoints:
+12. GET /api/salary
+13. GET /api/salary/{id}
+14. POST /api/salary
+15. PUT /api/salary/{id}
+16. DELETE /api/salary/{id}
+
+8.5 PayrollController endpoints = 3
+Controller file:
+- src/HRMS.API/Controllers/PayrollController.cs
+
+Endpoints:
+17. GET /api/payroll/recent
+18. GET /api/payroll/report
+19. POST /api/payroll/generate-monthly
+
+8.6 HealthController endpoints = 1
+Controller file:
+- src/HRMS.API/Controllers/HealthController.cs
+
+Endpoints:
+20. GET /api/health
+
+Real total API endpoint count = 20
+Explanation:
+- Auth = 5
+- Department = 1
+- Employee = 5
+- Salary = 5
+- Payroll = 3
+- Health = 1
+- Total = 20
+
+
+9. ROLE PERMISSIONS
+-------------------
+Roles are defined in:
+- src/HRMS.API/Auth/Roles.cs
+
+Current roles:
+- Admin
+- HR_Manager
+
+General access:
+- login and health are public
+- employee, salary, payroll, department require authenticated user with Admin or HR_Manager
+- user creation and user list/reset are Admin only
+
+
+10. WHERE APIS ARE CALLED IN THE FRONTEND
+-----------------------------------------
+This is very important if you want to explain or debug the system.
+
+Main API call abstraction:
+- hrms-web/src/app/core/services/api.service.ts
+
+Component call sites:
+
+10.1 Login
+- hrms-web/src/app/features/login/login.component.ts
+- calls AuthService.login()
+- AuthService then calls ApiService.login()
+- endpoint used: POST /api/auth/login
+
+10.2 App header counts
+- hrms-web/src/app/app.component.ts
+- calls:
+  - GET /api/employee
+  - GET /api/salary
+  - GET /api/payroll/report
+- used to display Employees, Salary, Payroll counts in top navigation
+
+10.3 Dashboard
+- hrms-web/src/app/features/dashboard/dashboard.component.ts
+- calls:
+  - GET /api/employee
+  - GET /api/salary
+  - GET /api/payroll/recent
+- used for dashboard stats and module cards
+
+10.4 Employee module
+- hrms-web/src/app/features/employees/employee-management.component.ts
+- calls:
+  - GET /api/employee
+  - POST /api/employee
+  - PUT /api/employee/{id}
+  - DELETE /api/employee/{id}
+
+10.5 Employee form dialog
+- hrms-web/src/app/features/employees/components/employee-form-dialog.component.ts
+- calls:
+  - GET /api/department
+- used to populate department dropdown
+
+10.6 Salary module
+- hrms-web/src/app/features/salary/salary-management.component.ts
+- calls:
+  - GET /api/salary
+  - POST /api/salary
+  - PUT /api/salary/{id}
+  - DELETE /api/salary/{id}
+
+10.7 Salary form dialog
+- hrms-web/src/app/features/salary/components/salary-form-dialog.component.ts
+- calls:
+  - GET /api/employee
+- used to populate employee selector by employee number
+
+10.8 Payroll module
+- hrms-web/src/app/features/payroll-dashboard/payroll-dashboard.component.ts
+- calls:
+  - POST /api/payroll/generate-monthly
+  - GET /api/payroll/recent
+  - GET /api/payroll/report
+- exports PDF and XLSX from data already loaded from API
+
+10.9 Profile module
+- hrms-web/src/app/features/profile/profile.component.ts
+- calls:
+  - POST /api/auth/change-password
+  - POST /api/auth/users
+
+10.10 Activity log module
+- hrms-web/src/app/features/activity-log/activity-log.component.ts
+- calls:
+  - GET /api/auth/users
+  - POST /api/auth/users/reset-password
+- actual activity log list itself is currently not backed by a real activity-log API and contains mock-style logic
+
+
+11. BUSINESS FLOWS
+------------------
+11.1 Employee creation flow
+Frontend:
+- Employee Management dialog collects employee data
+- Department dropdown calls department API
+- submit sends POST /api/employee
+
+Backend:
+- EmployeeController validates department existence
+- validates employee number, email, and account number uniqueness
+- creates employee row in Employees table
+
+Result:
+- employee appears in employee table
+- employee becomes selectable in salary form
+
+11.2 Salary creation flow
+Frontend:
+- Salary dialog selects employee by employee number
+- user enters salary amounts and effective dates
+- submit sends POST /api/salary
+
+Backend:
+- SalaryController validates employee existence
+- validates deduction amount logic
+- if employee already has active salary, current salary is closed by setting EffectiveTo
+- new salary row inserted
+
+Result:
+- salary appears in salary section
+- effective salary becomes usable by payroll generation
+
+11.3 Salary update flow
+Frontend:
+- edit dialog loads current salary values
+- EffectiveTo can be updated
+- update sends PUT /api/salary/{id}
+
+Backend:
+- salary is updated
+- PayrollGenerationService.RegenerateEmployeePayrollAsync(employeeId) runs
+- this recalculates current and recent months for that employee
+
+Result:
+- salary table updates
+- relevant payroll rows are regenerated
+
+11.4 Payroll generation flow
+Frontend:
+- Payroll dashboard sends POST /api/payroll/generate-monthly
+- success snackbar shows generated/updated/skipped counts
+
+Backend:
+- PayrollGenerationService checks all active employees
+- finds salary that overlaps selected month window
+- creates new payroll rows if missing
+- updates existing payroll rows if they already exist
+- skips employees with no salary setup
+
+Result:
+- payroll report changes
+- recent payroll transaction list updates
+
+11.5 Monthly report flow
+Frontend:
+- Payroll dashboard calls GET /api/payroll/report?year=...&month=...
+- report is used for summary cards and xlsx export
+
+Backend:
+- PayrollController pulls payrolls for that month
+- calculates totals from mapped rows
+
+11.6 Admin user creation flow
+Frontend:
+- admin creates user from Profile screen
+- sends POST /api/auth/users
+
+Backend:
+- DatabaseAuthUserStore inserts into AuthUsers table
+- users persist after API restart
+
+
+12. HOW PAYROLL CALCULATION WORKS
+---------------------------------
+Current payroll formula in PayrollGenerationService:
+- baseSalary = salary.BasicAmount
+- bonuses = salary.AllowanceAmount + request.AdditionalBonus
+- grossPay = baseSalary + bonuses
+- taxes = grossPay * (taxPercentage / 100)
+- totalDeductions = taxes + salary.DeductionAmount + request.AdditionalDeductions
+- netPay = grossPay - totalDeductions
+
+Important notes:
+- generation can now update existing payroll rows for the same month
+- salary validity now uses month overlap logic, not only first day of month
+- salary updates also trigger employee payroll regeneration
+
+
+13. HOW USER PERSISTENCE WORKS NOW
+----------------------------------
+Old behavior:
+- users were stored only in InMemoryAuthUserStore
+- created users disappeared after restart
+
+New behavior:
+- users are stored in AuthUsers SQL table
+- database-backed store file:
+  src/HRMS.API/Auth/DatabaseAuthUserStore.cs
+- startup applies migrations automatically
+- startup seeds appsettings AuthUsers only if they are missing
+
+This means:
+- admin-created users remain after restart
+- reset password remains after restart
+- changed password remains after restart
+
+
+14. HOW TO CHECK WHICH FILE CONTROLS WHAT
+-----------------------------------------
+Frontend layout/navigation:
+- hrms-web/src/app/app.component.ts
+- hrms-web/src/app/app.component.html
+- hrms-web/src/app/app.component.scss
+
+Frontend routes:
+- hrms-web/src/app/app.routes.ts
+
+Frontend HTTP layer:
+- hrms-web/src/app/core/services/api.service.ts
+
+Frontend auth state:
+- hrms-web/src/app/core/services/auth.service.ts
+- hrms-web/src/app/core/guards/auth.guard.ts
+- hrms-web/src/app/core/interceptors/auth.interceptor.ts
+
+Employee screen:
+- hrms-web/src/app/features/employees/employee-management.component.ts
+- hrms-web/src/app/features/employees/components/employee-form-dialog.component.ts
+
+Salary screen:
+- hrms-web/src/app/features/salary/salary-management.component.ts
+- hrms-web/src/app/features/salary/components/salary-form-dialog.component.ts
+
+Payroll screen:
+- hrms-web/src/app/features/payroll-dashboard/payroll-dashboard.component.ts
+
+API controllers:
+- src/HRMS.API/Controllers/*.cs
+
+DB context:
+- src/HRMS.Infrastructure/Persistence/ApplicationDbContext.cs
+
+Entity configurations:
+- src/HRMS.Infrastructure/Persistence/Configurations/*.cs
+
+Repositories:
+- src/HRMS.Infrastructure/Persistence/Repositories/*.cs
+
+Payroll business logic:
+- src/HRMS.Infrastructure/Services/PayrollGenerationService.cs
+
+JWT token creation:
+- src/HRMS.Infrastructure/Security/JwtTokenService.cs
+
+
+15. HOW TO DEBUG OR TRACE WHAT IS HAPPENING
+-------------------------------------------
+15.1 Check browser network calls
+Open browser developer tools:
+- F12
+- Network tab
+- filter by XHR or Fetch
+
+This shows:
+- which API was called
+- payload sent
+- response received
+- status code
+
+15.2 Check frontend source for API caller
+Search for:
+- apiService.
+- .get<
+- .post<
+- .put<
+- .delete<
+
+Primary locations are feature component .ts files.
+
+15.3 Check backend controller handling
+Look inside:
+- src/HRMS.API/Controllers
+
+Each controller method maps directly to an API endpoint.
+
+15.4 Check DB after action
+After create/update/delete:
+- open SSMS
+- run SELECT queries on the related table
+
+15.5 Check startup/migrations
+Look at:
+- src/HRMS.API/Program.cs
+- src/HRMS.Infrastructure/Persistence/Migrations
+
+15.6 Check recent backend runtime logs
+When running dotnet run, the terminal prints:
+- SQL executed by EF Core
+- startup migration messages
+- request processing info if enabled
+
+
+16. CURRENT IMPORTANT IMPROVEMENTS ALREADY ADDED
+------------------------------------------------
+The project currently includes these fixes/features:
+- employee email column visible in employee list
+- department dropdown in employee form
+- employee number selector in salary dialog
+- payroll xlsx export
+- payroll report month labels
+- employee/salary/payroll counts in UI
+- payroll regeneration updates existing rows
+- salary EffectiveTo handling fixed in update dialog
+- admin-created users persist in DB
+
+
+17. HOW TO RUN THE PROJECT
+--------------------------
+Backend:
+- from repo root:
+  dotnet restore HRMS.sln
+  dotnet build HRMS.sln
+  dotnet run --project src/HRMS.API/HRMS.API.csproj
+
+Frontend:
+- from repo root:
+  npm --prefix .\hrms-web install
+  npm --prefix .\hrms-web start
+
+Default URLs:
+- frontend: http://localhost:4200
+- API: http://localhost:5000
+
+Environment API base URL:
+- hrms-web/src/environments/environment.ts
+- current frontend API base: http://localhost:5000/api
+
+SSR server:
+- hrms-web/server.ts
+- built SSR Express server default port: 4000
+
+
+18. HOW TO ANSWER SOMEONE ABOUT THIS PROJECT
+--------------------------------------------
+Short explanation:
+This is a full HRMS application built with Angular frontend and .NET 8 backend. Employees are created first, then salary revisions are assigned to employees, and payroll is generated monthly based on effective salary records. All data is stored in SQL Server. Authentication uses JWT, and admin-created users are now persisted in the database.
+
+Medium explanation:
+The frontend is a standalone Angular app that talks to a .NET Web API using an ApiService and auth interceptor. The backend uses controllers, repositories, and a payroll service on top of Entity Framework Core. Employees belong to departments, employees have salary revisions over time, and payroll rows are generated from effective salary ranges. Admin and HR roles access the protected modules.
+
+Detailed explanation:
+The application has Angular routes for login, dashboard, employee management, salary management, payroll dashboard, profile, help center, and activity log. The backend exposes 20 endpoints across Auth, Department, Employee, Salary, Payroll, and Health controllers. Data is stored in SQL Server with EF Core migrations. Payroll logic calculates gross, tax, deductions, and net pay from the effective salary window for the selected month. UI counts, reloads, exports, and persistence are all wired through the frontend services and backend controllers described above.
+
+
+19. IMPORTANT CAVEATS / KNOWN NOTES
+-----------------------------------
+- Activity Log is not a full real backend log system yet.
+- Angular production build currently has bundle/style budget warnings or errors, but dev server runs.
+- Swagger is enabled only in Development environment.
+- Passwords are currently stored as plain text in AuthUsers. This works functionally but is not production-safe. In production, passwords should be hashed.
+
+
+20. IF YOU WANT TO EXPLORE MORE
+-------------------------------
+Best files to read first in order:
+1. README.md
+2. hrms-web/src/app/app.routes.ts
+3. hrms-web/src/app/core/services/api.service.ts
+4. src/HRMS.API/Program.cs
+5. src/HRMS.API/Controllers/*.cs
+6. src/HRMS.Infrastructure/Services/PayrollGenerationService.cs
+7. src/HRMS.Infrastructure/Persistence/ApplicationDbContext.cs
+8. src/HRMS.Domain/Entities/*.cs
+9. src/HRMS.Infrastructure/Persistence/Migrations/*
+
+End of guide.

@@ -120,10 +120,11 @@ await EnsureDatabaseSeedDataAsync(app);
 
 app.UseGlobalExceptionHandler();
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
     // Skip HTTPS redirection in development to allow HTTP access
 }
 else
@@ -134,6 +135,16 @@ else
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/", () => Results.Ok(new
+{
+    service = "HRMS API",
+    status = "running",
+    timestampUtc = DateTime.UtcNow,
+    health = "/api/health",
+    swagger = "/swagger"
+}));
+
 app.MapControllers();
 
 app.Run();
