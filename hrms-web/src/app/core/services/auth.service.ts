@@ -15,6 +15,7 @@ export interface AuthUser {
 export class AuthService {
   private currentUser$ = new BehaviorSubject<AuthUser | null>(null);
   private readonly isBrowser: boolean;
+  private static readonly tokenStorageKey = 'hrms_access_token';
 
   constructor(
     private apiService: ApiService,
@@ -26,6 +27,12 @@ export class AuthService {
 
   private loadUserFromStorage(): void {
     if (!this.isBrowser) {
+      return;
+    }
+
+    if (!this.hasValidAccessToken()) {
+      this.clearBrowserAuthStorage();
+      this.currentUser$.next(null);
       return;
     }
 
@@ -65,7 +72,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.apiService.getAccessToken() !== null;
+    return this.hasValidAccessToken();
   }
 
   getCurrentUser(): Observable<AuthUser | null> {
@@ -74,5 +81,59 @@ export class AuthService {
 
   getCurrentUserSync(): AuthUser | null {
     return this.currentUser$.value;
+  }
+
+  private hasValidAccessToken(): boolean {
+    const token = this.apiService.getAccessToken();
+
+    if (!token) {
+      return false;
+    }
+
+    const expiresAtSeconds = this.getTokenExpirationEpoch(token);
+
+    if (expiresAtSeconds === null) {
+      return false;
+    }
+
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    if (expiresAtSeconds <= nowSeconds) {
+      this.apiService.clearAccessToken();
+      this.clearBrowserAuthStorage();
+      this.currentUser$.next(null);
+      return false;
+    }
+
+    return true;
+  }
+
+  private getTokenExpirationEpoch(token: string): number | null {
+    const tokenParts = token.split('.');
+
+    if (tokenParts.length < 2) {
+      return null;
+    }
+
+    try {
+      const payload = JSON.parse(this.base64UrlDecode(tokenParts[1])) as { exp?: unknown };
+      return typeof payload.exp === 'number' ? payload.exp : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private base64UrlDecode(input: string): string {
+    const base64 = input.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+    return atob(padded);
+  }
+
+  private clearBrowserAuthStorage(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    localStorage.removeItem('hrms_user');
+    localStorage.removeItem(AuthService.tokenStorageKey);
   }
 }
